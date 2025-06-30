@@ -92,13 +92,13 @@
             opacity: 0.5;
         }
 
-        .soundboard-btn {
+        .button {
             display: inline-block;
             padding: 1rem 2rem;
             background: linear-gradient(135deg, #64ffda 0%, #00bcd4 50%, #2196f3 100%);
             color: #0a0a0a;
             text-decoration: none;
-            border-radius: 50px;
+            border-radius: 500px;
             font-weight: 600;
             font-size: 1.1rem;
             letter-spacing: 0.5px;
@@ -106,48 +106,20 @@
             box-shadow: 0 5px 20px rgba(100, 255, 218, 0.3);
             text-transform: uppercase;
             opacity: 0;
-            animation: fadeInUp 1s ease-out 0.8s forwards;
+            animation: fadeInUp 0.5s ease-out 0.8s forwards;
+            margin: 0 0.2rem;
+            margin-bottom: 1rem;
+            margin-top: 1rem;
         }
 
-        .soundboard-btn:hover {
+        .button:hover {
             transform: translateY(-3px) scale(1.05);
             box-shadow: 0 10px 30px rgba(100, 255, 218, 0.5);
             background: linear-gradient(135deg, #00bcd4 0%, #2196f3 50%, #9c27b0 100%);
         }
 
-        .soundboard-btn:active {
+        .button:-moz-window-inactive {
             transform: translateY(-1px) scale(1.02);
-        }
-
-        .nav-dots {
-            position: fixed;
-            right: 2rem;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 3;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .nav-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .nav-dot:hover {
-            background: #64ffda;
-            transform: scale(1.2);
-        }
-
-        .nav-dot.active {
-            background: #64ffda;
-            box-shadow: 0 0 20px rgba(100, 255, 218, 0.5);
         }
 
         .floating-elements {
@@ -264,16 +236,12 @@
         <div class="glow-orb-2"></div>
     </div>
 
-    <div class="nav-dots">
-        <div class="nav-dot active"></div>
-        <div class="nav-dot"></div>
-        <div class="nav-dot"></div>
-    </div>
-
     <div class="container">
         <div class="logo-container">
             <h1 class="logo">Simon</h1>
-            <a href="soundboard.html" class="soundboard-btn">Soundboard</a>
+            <a href="soundboard.html" class="button">Soundboard</a>
+            <a href="qrcodegenerator.html" class="button">QR-Code Generator</a>
+            <a href="notenrechner.html" class="button">Notenschnitt-Rechner</a>
         </div>
     </div>
 
