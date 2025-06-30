@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,13 +39,29 @@
         }
 
         @keyframes twinkle {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.2); }
+
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
         }
 
         .container {
@@ -63,14 +80,30 @@
             animation: float 6s ease-in-out infinite;
         }
 
+        @keyframes rgbShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
         .logo {
             font-size: clamp(3rem, 8vw, 6rem);
             font-weight: 700;
             letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #64ffda 0%, #00bcd4 30%, #2196f3 60%, #9c27b0 100%);
+            background: linear-gradient(270deg, #ff0055, #00f2ff, #fffb00, #ff0055);
+            background-size: 600% 600%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: rgbShift 23s ease infinite;
             margin-bottom: 1rem;
             text-shadow: 0 0 30px rgba(100, 255, 218, 0.3);
             position: relative;
@@ -83,10 +116,12 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, #64ffda 0%, #00bcd4 30%, #2196f3 60%, #9c27b0 100%);
+            background: linear-gradient(270deg, #ff0055, #00f2ff, #fffb00, #ff0055);
+            background-size: 600% 600%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: rgbShift 6s ease infinite;
             filter: blur(20px);
             z-index: -1;
             opacity: 0.5;
@@ -110,6 +145,9 @@
             margin: 0 0.2rem;
             margin-bottom: 1rem;
             margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
         .button:hover {
@@ -165,8 +203,13 @@
         }
 
         @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         @keyframes fadeInUp {
@@ -174,6 +217,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -206,28 +250,38 @@
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.2); opacity: 0.8; }
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
         }
 
         @media (max-width: 768px) {
             .nav-dots {
                 right: 1rem;
             }
-            
+
             .container {
                 padding: 1rem;
             }
-            
+
             .floating-circle {
                 display: none;
             }
         }
     </style>
 </head>
+
 <body>
     <div id="starfield"></div>
-    
+
     <div class="floating-elements">
         <div class="floating-circle circle-1"></div>
         <div class="floating-circle circle-2"></div>
@@ -254,30 +308,30 @@
             for (let i = 0; i < numberOfStars; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
-                
+
                 // Random position
                 const x = Math.random() * 100;
                 const y = Math.random() * 100;
-                
+
                 // Random size
                 const size = Math.random() * 3 + 1;
-                
+
                 // Random animation delay
                 const delay = Math.random() * 3;
-                
+
                 star.style.left = x + '%';
                 star.style.top = y + '%';
                 star.style.width = size + 'px';
                 star.style.height = size + 'px';
                 star.style.animationDelay = delay + 's';
-                
+
                 // Some stars have different colors
                 if (Math.random() > 0.8) {
                     star.style.background = '#64ffda';
                 } else if (Math.random() > 0.9) {
                     star.style.background = '#2196f3';
                 }
-                
+
                 starfield.appendChild(star);
             }
         }
@@ -287,10 +341,10 @@
             document.addEventListener('mousemove', (e) => {
                 const mouseX = e.clientX / window.innerWidth;
                 const mouseY = e.clientY / window.innerHeight;
-                
+
                 const stars = document.querySelectorAll('.star');
                 const circles = document.querySelectorAll('.floating-circle');
-                
+
                 stars.forEach((star, index) => {
                     const speed = (index % 3 + 1) * 0.5;
                     const x = (mouseX - 0.5) * speed;
@@ -310,12 +364,12 @@
         // Navigation dots interaction
         function initNavDots() {
             const dots = document.querySelectorAll('.nav-dot');
-            
+
             dots.forEach((dot, index) => {
                 dot.addEventListener('click', () => {
                     dots.forEach(d => d.classList.remove('active'));
                     dot.classList.add('active');
-                    
+
                     // Add some visual feedback
                     dot.style.transform = 'scale(1.5)';
                     setTimeout(() => {
@@ -328,13 +382,13 @@
         // Smooth logo glow effect on hover
         function initLogoEffects() {
             const logo = document.querySelector('.logo');
-            
+
             logo.addEventListener('mouseenter', () => {
                 logo.style.filter = 'drop-shadow(0 0 20px rgba(100, 255, 218, 0.8))';
                 logo.style.transform = 'scale(1.05)';
                 logo.style.transition = 'all 0.3s ease';
             });
-            
+
             logo.addEventListener('mouseleave', () => {
                 logo.style.filter = '';
                 logo.style.transform = '';
@@ -358,15 +412,15 @@
             shootingStar.style.background = 'linear-gradient(45deg, #64ffda, transparent)';
             shootingStar.style.borderRadius = '50%';
             shootingStar.style.boxShadow = '0 0 10px #64ffda';
-            
+
             const startX = Math.random() * window.innerWidth;
             const startY = Math.random() * window.innerHeight * 0.5;
-            
+
             shootingStar.style.left = startX + 'px';
             shootingStar.style.top = startY + 'px';
-            
+
             document.getElementById('starfield').appendChild(shootingStar);
-            
+
             // Animate the shooting star
             shootingStar.animate([
                 { transform: 'translate(0, 0) scale(1)', opacity: 1 },
@@ -383,4 +437,5 @@
         setInterval(createShootingStar, 3000);
     </script>
 </body>
+
 </html>
