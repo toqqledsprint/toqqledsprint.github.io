@@ -5,76 +5,172 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Notendurchschnittsrechner</title>
   <style>
+    /* Grundlegende Styles & Body */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #74ebd5, #9face6);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+      color: #fff;
       min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
       display: flex;
-      align-items: center;
+      align-items: flex-start; /* Container oben ausrichten */
       justify-content: center;
       padding: 20px;
     }
 
-    .container {
-      background: white;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    /* Sternenfeld-Hintergrund */
+    .starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
-      max-width: 400px;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
     }
 
+    .star {
+      position: absolute;
+      background: #ffffff;
+      border-radius: 50%;
+      animation: twinkle 3s infinite ease-in-out;
+      opacity: 0.3;
+      transform-origin: center center;
+    }
+
+    @keyframes twinkle {
+      0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+    }
+
+    /* Hauptcontainer */
+    .container {
+      position: relative;
+      z-index: 2;
+      max-width: 450px;
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 2.5rem 2rem;
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+      margin-top: 4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Überschrift */
     h1 {
       text-align: center;
-      margin-bottom: 20px;
-      background: linear-gradient(135deg, #4b6cb7, #182848);
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, #64ffda 0%, #00bcd4 30%, #2196f3 60%, #9c27b0 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 2rem;
+      user-select: none;
     }
 
-    .note-field {
+    /* Container für die Notenfelder */
+    #noteFields {
       display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
     }
 
+    /* Einzelnes Notenfeld */
     .note-field input {
-      flex: 1;
-      padding: 10px;
-      font-size: 1rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-
-    .buttons {
-      text-align: center;
-      margin: 15px 0;
-    }
-
-    button {
-      padding: 10px 20px;
-      font-size: 1rem;
-      border-radius: 30px;
+      width: 100%;
+      padding: 1rem;
       border: none;
-      cursor: pointer;
-      background: #4b6cb7;
-      color: white;
-      transition: background 0.3s;
-    }
-
-    button:hover {
-      background: #3b5aa1;
-    }
-
-    #average {
+      border-radius: 12px;
+      font-size: 1.1rem;
+      background-color: #111;
+      color: #fff;
+      font-weight: 600;
       text-align: center;
-      font-size: 1.2rem;
+    }
+
+    .note-field input::placeholder {
+      color: #aaa;
+      font-weight: normal;
+    }
+
+    /* Container für Buttons */
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      gap: 1rem;
+    }
+
+    /* Allgemeiner Button-Style */
+    button {
+      width: 100%;
+      padding: 1rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      color: #fff;
       font-weight: bold;
-      margin-top: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+    
+    /* "Weitere Note" Button */
+    .btn-add {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    .btn-add:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: #64ffda;
+    }
+
+    /* "Berechnen" Button */
+    .btn-calc {
+      background: linear-gradient(135deg, #00bcd4, #2196f3);
+    }
+
+    .btn-calc:hover {
+      background: linear-gradient(135deg, #2196f3, #9c27b0);
+      box-shadow: 0 0 15px rgba(156, 39, 176, 0.5);
+    }
+
+    /* Ergebnis-Anzeige */
+    #average {
+      margin-top: 2rem;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #64ffda;
+      text-align: center;
+      min-height: 2.5rem; /* Verhindert Layout-Sprünge */
+      user-select: none;
     }
   </style>
 </head>
 <body>
+
+  <div class="starfield"></div>
+
   <div class="container">
     <h1>Notendurchschnitt</h1>
     <div id="noteFields">
@@ -83,13 +179,34 @@
       </div>
     </div>
     <div class="buttons">
-      <button onclick="addField()">➕ Weitere Note</button>
-      <button onclick="calculateAverage()">🧮 Durchschnitt berechnen</button>
+      <button onclick="addField()" class="btn-add">➕ Weitere Note hinzufügen</button>
+      <button onclick="calculateAverage()" class="btn-calc">🧮 Durchschnitt berechnen</button>
     </div>
     <div id="average"></div>
   </div>
 
   <script>
+    // Sternenfeld-Effekt generieren
+    function createStars() {
+        const starfield = document.querySelector('.starfield');
+        const numStars = 200; // Anzahl der Sterne
+        for (let i = 0; i < numStars; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3 + 1; // Größe zwischen 1px und 4px
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.left = `${Math.random() * 100}%`;
+            // Verzögerung für asynchrones Funkeln
+            star.style.animationDelay = `${Math.random() * 3}s`; 
+            starfield.appendChild(star);
+        }
+    }
+    createStars();
+
+
+    // Funktion, um ein neues Notenfeld hinzuzufügen
     function addField() {
       const container = document.getElementById('noteFields');
       const fieldCount = container.querySelectorAll('.note').length + 1;
@@ -100,6 +217,7 @@
       container.appendChild(div);
     }
 
+    // Funktion, um den Durchschnitt zu berechnen
     function calculateAverage() {
       const notes = document.querySelectorAll('.note');
       let total = 0;
@@ -107,7 +225,7 @@
 
       notes.forEach(note => {
         const val = parseFloat(note.value);
-        if (!isNaN(val)) {
+        if (!isNaN(val) && val >= 1 && val <= 6) {
           total += val;
           count++;
         }
@@ -115,12 +233,12 @@
 
       const result = document.getElementById('average');
       if (count === 0) {
-        result.textContent = '❗ Bitte mindestens eine gültige Note eingeben.';
-        result.style.color = 'red';
+        result.textContent = '❗ Bitte gültige Note eingeben.';
+        result.style.color = '#ff5252'; // Ein leuchtendes Rot für Fehler
       } else {
         const average = (total / count).toFixed(2).replace('.', ',');
         result.textContent = `📊 Durchschnitt: ${average}`;
-        result.style.color = '#2c3e50';
+        result.style.color = '#64ffda'; // Cyan für das Ergebnis
       }
     }
   </script>

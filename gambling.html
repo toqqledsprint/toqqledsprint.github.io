@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gambling</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .star {
+      position: absolute;
+      background: #ffffff;
+      border-radius: 50%;
+      animation: twinkle 3s infinite ease-in-out;
+      opacity: 0.3;
+      transform-origin: center center;
+    }
+
+    @keyframes twinkle {
+
+      0%,
+      100% {
+        opacity: 0.3;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      max-width: 600px;
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 3rem 1.5rem; /* Weniger Padding auf kleinen Bildschirmen */
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+      margin: 4rem auto; /* Weniger Margin oben/unten */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, #64ffda 0%, #00bcd4 30%, #2196f3 60%, #9c27b0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 2rem;
+      user-select: none;
+    }
+
+    select {
+      width: 100%;
+      padding: 1rem;
+      margin-bottom: 3rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      background-color: #111;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    select option {
+      background-color: #111;
+      color: #fff;
+    }
+
+    input,
+    button {
+      width: 100%;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      background-color: #111;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    input::placeholder {
+      color: #aaa;
+    }
+
+    button {
+      background: linear-gradient(135deg, #00bcd4, #2196f3);
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #2196f3, #9c27b0);
+    }
+
+    .game {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .active {
+      display: flex;
+    }
+
+    .wheel-container {
+      position: relative;
+      width: 90vw;
+      max-width: 450px;
+      aspect-ratio: 1 / 1;
+      margin-bottom: 3rem;
+      user-select: none;
+    }
+
+    #wheelCanvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 12px solid #111;
+      box-shadow: 0 0 20px #00bcd4;
+      background: transparent;
+      transition: transform 5s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .pointer {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-top: 40px solid #ff4081;
+      filter: drop-shadow(0 0 4px #ff4081);
+      z-index: 10;
+    }
+
+    #wheel-entries {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      margin-bottom: 2rem;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .wheel-entry {
+      display: flex;
+      gap: 0.5rem;
+      width: 100%;
+    }
+
+    .wheel-entry input {
+      flex: 1;
+      padding: 0.8rem;
+      font-size: 1rem;
+      background-color: #111;
+      color: #fff;
+      border-radius: 12px;
+      border: none;
+    }
+
+    .wheel-entry button {
+      flex-shrink: 0;
+      width: 48px;
+      font-size: 1.2rem;
+      background: #ff5252;
+      border-radius: 12px;
+      padding: 0 0.5rem;
+      transition: background-color 0.3s;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .wheel-entry button:hover {
+      background: #ff1744;
+    }
+
+    #random {
+        width: 100%;
+    }
+    #random-inputs {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+    #random input {
+      width: 48%;
+      font-size: 1.8rem;
+      padding: 1.2rem;
+      margin-bottom: 1rem;
+      background-color: #111;
+      border-radius: 12px;
+      border: none;
+      color: #fff;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    #random-result {
+      font-size: 4rem;
+      margin-top: 1rem;
+      font-weight: 700;
+      color: #64ffda;
+      text-align: center;
+      min-height: 4.5rem;
+      user-select: none;
+    }
+
+    .coin-container {
+      margin-bottom: 1rem;
+    }
+    .coin-wrapper {
+      width: 180px;
+      height: 180px;
+      cursor: pointer;
+      filter:
+        drop-shadow(0 0 8px #00bcd4) drop-shadow(0 0 16px #2196f3);
+      border-radius: 50%;
+    }
+
+    .coin {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 1.5s ease-out;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #111111, #222222);
+    }
+
+    .coin img {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      backface-visibility: hidden;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .coin .tail {
+      transform: rotateY(180deg);
+    }
+
+    #coin button {
+      width: 100%;
+      padding: 1.3rem;
+      font-size: 1.4rem;
+      font-weight: 700;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #00bcd4, #2196f3);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 0 18px #2196f3;
+      transition: background 0.3s ease;
+      user-select: none;
+    }
+
+    #coin button:hover {
+      background: linear-gradient(135deg, #2196f3, #9c27b0);
+      box-shadow: 0 0 25px #9c27b0;
+    }
+
+    .container::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="starfield" id="starfield"></div>
+
+  <div class="container" role="main" aria-label="Spielauswahl und Spiele">
+    <h1>Gambling</h1>
+    <select id="game-select" aria-label="Spiel auswählen">
+      <option value="wheel">🎡 Glücksrad</option>
+      <option value="random">🎲 Zufallszahl</option>
+      <option value="coin">🪙 Kopf oder Zahl</option>
+    </select>
+
+    <section id="wheel" class="game active" aria-label="Glücksrad Spiel">
+      <div class="wheel-container" aria-hidden="true">
+        <div class="pointer"></div>
+        <canvas id="wheelCanvas" role="img" aria-label="Glücksrad"></canvas>
+      </div>
+      <div id="wheel-entries" aria-live="polite" aria-relevant="additions removals"></div>
+      <button type="button" onclick="addWheelEntry()" aria-label="Eintrag hinzufügen zum Glücksrad">➕ Eintrag hinzufügen</button>
+      <button type="button" onclick="spinWheel()" aria-label="Glücksrad drehen">🎡 Drehen</button>
+    </section>
+
+    <section id="random" class="game" aria-label="Zufallszahl Spiel">
+        <div id="random-inputs">
+            <input type="number" id="min" placeholder="Min" aria-label="Minimale Zahl" />
+            <input type="number" id="max" placeholder="Max" aria-label="Maximale Zahl" />
+        </div>
+      <button type="button" onclick="generateRandom()" aria-label="Zufallszahl generieren">Generieren</button>
+      <div id="random-result" role="status" aria-live="polite" aria-atomic="true"></div>
+    </section>
+
+    <section id="coin" class="game" aria-label="Kopf oder Zahl Spiel">
+      <div class="coin-container">
+        <div class="coin-wrapper">
+          <div class="coin" id="coinElement">
+            <img src="img/gambling/kopf.png" alt="Kopf" class="head" />
+            <img src="img/gambling/zahl.png" alt="Zahl" class="tail" />
+          </div>
+        </div>
+      </div>
+      <button type="button" onclick="flipCoin()" id="coinFlipBtn" aria-label="Münze werfen">🪙 Werfen</button>
+    </section>
+  </div>
+
+<script>
+    const starfield = document.getElementById('starfield');
+    const starCount = 120;
+    for (let i = 0; i < starCount; i++) {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      const size = Math.random() * 2 + 1 + 'px';
+      star.style.width = size;
+      star.style.height = size;
+      star.style.top = Math.random() * 100 + '%';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.animationDelay = (Math.random() * 3) + 's';
+      starfield.appendChild(star);
+    }
+
+    const select = document.getElementById("game-select");
+    const games = document.querySelectorAll(".game");
+    select.addEventListener("change", () => {
+      games.forEach(game => game.classList.remove("active"));
+      document.getElementById(select.value).classList.add("active");
+    });
+
+    const canvas = document.getElementById("wheelCanvas");
+    const ctx = canvas.getContext("2d");
+    let sectors = [];
+    let isSpinning = false;
+    let currentRotation = 0;
+
+    const colors = ["#ff1744", "#ff9100", "#ffc400", "#00e676", "#00b0ff", "#651fff", "#00bcd4", "#d500f9"];
+
+    function drawWheel() {
+        const inputs = document.querySelectorAll("#wheel-entries input");
+        sectors = Array.from(inputs).map(i => i.value.trim()).filter(Boolean);
+
+        const size = canvas.clientWidth;
+        canvas.width = size;
+        canvas.height = size;
+
+        const centerX = size / 2;
+        const centerY = size / 2;
+        const radius = size / 2 - 6;
+        const textRadius = radius * 0.65;
+
+        if (sectors.length === 0) {
+            ctx.clearRect(0, 0, size, size);
+            return;
+        }
+        
+        const arc = 2 * Math.PI / sectors.length;
+        ctx.clearRect(0, 0, size, size);
+
+        sectors.forEach((label, i) => {
+            const angle = i * arc;
+            
+            ctx.fillStyle = colors[i % colors.length];
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(centerX, centerY, radius, angle, angle + arc);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.save();
+            ctx.fillStyle = "#fff";
+            ctx.translate(centerX, centerY);
+            
+            const textAngle = angle + arc / 2;
+            ctx.rotate(textAngle);
+            
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.font = `bold ${size / 22.5}px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif`;
+
+            if (textAngle > Math.PI / 2 && textAngle < 1.5 * Math.PI) {
+                ctx.rotate(Math.PI);
+                ctx.fillText(label, -textRadius, 0);
+            } else {
+                ctx.fillText(label, textRadius, 0);
+            }
+            
+            ctx.restore();
+        });
+    }
+
+
+    function spinWheel() {
+      if (isSpinning) return;
+      drawWheel();
+      if (sectors.length < 2) {
+        alert("Bitte fügen Sie mindestens zwei Einträge hinzu, um das Rad zu drehen.");
+        return;
+      }
+      isSpinning = true;
+      const additionalRotation = (Math.random() * 360) + (5 * 360);
+      currentRotation += additionalRotation;
+      canvas.style.transform = `rotate(${currentRotation}deg)`;
+      canvas.addEventListener('transitionend', onSpinEnd, { once: true });
+    }
+
+    function onSpinEnd() {
+        isSpinning = false;
+        const finalRotation = currentRotation % 360;
+        const pointerPosition = 270;
+        let winningAngle = (pointerPosition - finalRotation + 360) % 360;
+        const sectorAngle = 360 / sectors.length;
+        const winningIndex = Math.floor(winningAngle / sectorAngle);
+        setTimeout(() => {
+            if (sectors[winningIndex]) {
+                alert(`"${sectors[winningIndex]}" hat gewonnen!`);
+            }
+        }, 100);
+    }
+    
+    function addWheelEntry(value = "") {
+      if (isSpinning) {
+        alert("Bitte warten, bis das Glücksrad angehalten hat.");
+        return;
+      }
+      const container = document.getElementById("wheel-entries");
+      const entry = document.createElement("div");
+      entry.className = "wheel-entry";
+      const input = document.createElement("input");
+      input.type = "text";
+      input.placeholder = "Neuer Eintrag";
+      input.value = value;
+      input.autocomplete = "off";
+      input.spellcheck = false;
+      entry.appendChild(input);
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.textContent = "×";
+      removeBtn.title = "Eintrag entfernen";
+      removeBtn.onclick = () => {
+        if (isSpinning) {
+          alert("Bitte warten, bis das Glücksrad angehalten hat.");
+          return;
+        }
+        if (container.children.length > 2) {
+          container.removeChild(entry);
+          drawWheel();
+        } else {
+          alert("Das Glücksrad muss mindestens zwei Einträge haben.");
+        }
+      };
+      entry.appendChild(removeBtn);
+      input.addEventListener("input", () => drawWheel());
+      container.appendChild(entry);
+      if (value === "") {
+        input.focus();
+      }
+    }
+
+    // Initialisierung
+    addWheelEntry("Eintrag 1");
+    addWheelEntry("Eintrag 2");
+    drawWheel();
+    // Event Listener, um das Rad bei Größenänderung neu zu zeichnen
+    window.addEventListener('resize', drawWheel);
+
+
+    function generateRandom() {
+      const minInput = document.getElementById("min");
+      const maxInput = document.getElementById("max");
+      const min = parseInt(minInput.value, 10);
+      const max = parseInt(maxInput.value, 10);
+      if (isNaN(min) || isNaN(max)) {
+        alert("Bitte geben Sie für Min und Max gültige Zahlen ein.");
+        return;
+      }
+      if (min > max) {
+        alert("Die 'Min'-Zahl darf nicht größer als die 'Max'-Zahl sein.");
+        return;
+      }
+      const result = Math.floor(Math.random() * (max - min + 1)) + min;
+      const output = document.getElementById("random-result");
+      output.textContent = "...";
+      setTimeout(() => {
+        output.textContent = result;
+      }, 300);
+    }
+
+    let coinRotation = 0;
+    let isCoinFlipping = false;
+    function flipCoin() {
+      if (isCoinFlipping) return;
+      isCoinFlipping = true;
+      const coin = document.getElementById("coinElement");
+      const isKopf = Math.random() < 0.5;
+      const spins = 6 * 360;
+      coinRotation = Math.ceil(coinRotation / 360) * 360;
+      coinRotation += spins + (isKopf ? 0 : 180);
+      coin.style.transform = `rotateY(${coinRotation}deg)`;
+      setTimeout(() => {
+        isCoinFlipping = false;
+      }, 1500);
+    }
+
+    window.scrollTo(0, 0);
+  </script>
+</body>
+
+</html>
