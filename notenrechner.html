@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notendurchschnittsrechner</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #74ebd5, #9face6);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #4b6cb7, #182848);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .note-field {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .note-field input {
+      flex: 1;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .buttons {
+      text-align: center;
+      margin: 15px 0;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      background: #4b6cb7;
+      color: white;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #3b5aa1;
+    }
+
+    #average {
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Notendurchschnitt</h1>
+    <div id="noteFields">
+      <div class="note-field">
+        <input type="number" class="note" min="1" max="6" step="0.1" placeholder="Note 1">
+      </div>
+    </div>
+    <div class="buttons">
+      <button onclick="addField()">➕ Weitere Note</button>
+      <button onclick="calculateAverage()">🧮 Durchschnitt berechnen</button>
+    </div>
+    <div id="average"></div>
+  </div>
+
+  <script>
+    function addField() {
+      const container = document.getElementById('noteFields');
+      const fieldCount = container.querySelectorAll('.note').length + 1;
+
+      const div = document.createElement('div');
+      div.className = 'note-field';
+      div.innerHTML = `<input type="number" class="note" min="1" max="6" step="0.1" placeholder="Note ${fieldCount}">`;
+      container.appendChild(div);
+    }
+
+    function calculateAverage() {
+      const notes = document.querySelectorAll('.note');
+      let total = 0;
+      let count = 0;
+
+      notes.forEach(note => {
+        const val = parseFloat(note.value);
+        if (!isNaN(val)) {
+          total += val;
+          count++;
+        }
+      });
+
+      const result = document.getElementById('average');
+      if (count === 0) {
+        result.textContent = '❗ Bitte mindestens eine gültige Note eingeben.';
+        result.style.color = 'red';
+      } else {
+        const average = (total / count).toFixed(2).replace('.', ',');
+        result.textContent = `📊 Durchschnitt: ${average}`;
+        result.style.color = '#2c3e50';
+      }
+    }
+  </script>
+</body>
+</html>

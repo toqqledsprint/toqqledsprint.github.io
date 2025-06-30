@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: #ffffff;
+            border-radius: 50%;
+            animation: twinkle 3s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .logo-container {
+            text-align: center;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .logo {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #64ffda 0%, #00bcd4 30%, #2196f3 60%, #9c27b0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 30px rgba(100, 255, 218, 0.3);
+            position: relative;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #64ffda 0%, #00bcd4 30%, #2196f3 60%, #9c27b0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: blur(20px);
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .soundboard-btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #64ffda 0%, #00bcd4 50%, #2196f3 100%);
+            color: #0a0a0a;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(100, 255, 218, 0.3);
+            text-transform: uppercase;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.8s forwards;
+        }
+
+        .soundboard-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(100, 255, 218, 0.5);
+            background: linear-gradient(135deg, #00bcd4 0%, #2196f3 50%, #9c27b0 100%);
+        }
+
+        .soundboard-btn:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .nav-dots {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-dot:hover {
+            background: #64ffda;
+            transform: scale(1.2);
+        }
+
+        .nav-dot.active {
+            background: #64ffda;
+            box-shadow: 0 0 20px rgba(100, 255, 218, 0.5);
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+            border-radius: 50%;
+            animation: rotate 20s linear infinite;
+        }
+
+        .circle-1 {
+            width: 200px;
+            height: 200px;
+            top: 10%;
+            left: 10%;
+            animation-duration: 15s;
+        }
+
+        .circle-2 {
+            width: 150px;
+            height: 150px;
+            top: 60%;
+            right: 15%;
+            animation-duration: 25s;
+            animation-direction: reverse;
+        }
+
+        .circle-3 {
+            width: 100px;
+            height: 100px;
+            bottom: 20%;
+            left: 20%;
+            animation-duration: 30s;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .glow-orb {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(100, 255, 218, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            top: 20%;
+            left: -10%;
+            animation: pulse 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .glow-orb-2 {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(33, 150, 243, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            bottom: 10%;
+            right: -5%;
+            animation: pulse 6s ease-in-out infinite;
+            animation-delay: 2s;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        @media (max-width: 768px) {
+            .nav-dots {
+                right: 1rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .floating-circle {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="starfield"></div>
+    
+    <div class="floating-elements">
+        <div class="floating-circle circle-1"></div>
+        <div class="floating-circle circle-2"></div>
+        <div class="floating-circle circle-3"></div>
+        <div class="glow-orb"></div>
+        <div class="glow-orb-2"></div>
+    </div>
+
+    <div class="nav-dots">
+        <div class="nav-dot active"></div>
+        <div class="nav-dot"></div>
+        <div class="nav-dot"></div>
+    </div>
+
+    <div class="container">
+        <div class="logo-container">
+            <h1 class="logo">Simon</h1>
+            <a href="soundboard.html" class="soundboard-btn">Soundboard</a>
+        </div>
+    </div>
+
+    <script>
+        // Create animated starfield
+        function createStarfield() {
+            const starfield = document.getElementById('starfield');
+            const numberOfStars = 150;
+
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                // Random position
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                
+                // Random size
+                const size = Math.random() * 3 + 1;
+                
+                // Random animation delay
+                const delay = Math.random() * 3;
+                
+                star.style.left = x + '%';
+                star.style.top = y + '%';
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.animationDelay = delay + 's';
+                
+                // Some stars have different colors
+                if (Math.random() > 0.8) {
+                    star.style.background = '#64ffda';
+                } else if (Math.random() > 0.9) {
+                    star.style.background = '#2196f3';
+                }
+                
+                starfield.appendChild(star);
+            }
+        }
+
+        // Mouse parallax effect
+        function initParallax() {
+            document.addEventListener('mousemove', (e) => {
+                const mouseX = e.clientX / window.innerWidth;
+                const mouseY = e.clientY / window.innerHeight;
+                
+                const stars = document.querySelectorAll('.star');
+                const circles = document.querySelectorAll('.floating-circle');
+                
+                stars.forEach((star, index) => {
+                    const speed = (index % 3 + 1) * 0.5;
+                    const x = (mouseX - 0.5) * speed;
+                    const y = (mouseY - 0.5) * speed;
+                    star.style.transform = `translate(${x}px, ${y}px)`;
+                });
+
+                circles.forEach((circle, index) => {
+                    const speed = (index + 1) * 0.3;
+                    const x = (mouseX - 0.5) * speed * 10;
+                    const y = (mouseY - 0.5) * speed * 10;
+                    circle.style.transform = `translate(${x}px, ${y}px) rotate(${Date.now() * 0.001}rad)`;
+                });
+            });
+        }
+
+        // Navigation dots interaction
+        function initNavDots() {
+            const dots = document.querySelectorAll('.nav-dot');
+            
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    dots.forEach(d => d.classList.remove('active'));
+                    dot.classList.add('active');
+                    
+                    // Add some visual feedback
+                    dot.style.transform = 'scale(1.5)';
+                    setTimeout(() => {
+                        dot.style.transform = '';
+                    }, 200);
+                });
+            });
+        }
+
+        // Smooth logo glow effect on hover
+        function initLogoEffects() {
+            const logo = document.querySelector('.logo');
+            
+            logo.addEventListener('mouseenter', () => {
+                logo.style.filter = 'drop-shadow(0 0 20px rgba(100, 255, 218, 0.8))';
+                logo.style.transform = 'scale(1.05)';
+                logo.style.transition = 'all 0.3s ease';
+            });
+            
+            logo.addEventListener('mouseleave', () => {
+                logo.style.filter = '';
+                logo.style.transform = '';
+            });
+        }
+
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            createStarfield();
+            initParallax();
+            initNavDots();
+            initLogoEffects();
+        });
+
+        // Add some random shooting stars
+        function createShootingStar() {
+            const shootingStar = document.createElement('div');
+            shootingStar.style.position = 'absolute';
+            shootingStar.style.width = '2px';
+            shootingStar.style.height = '2px';
+            shootingStar.style.background = 'linear-gradient(45deg, #64ffda, transparent)';
+            shootingStar.style.borderRadius = '50%';
+            shootingStar.style.boxShadow = '0 0 10px #64ffda';
+            
+            const startX = Math.random() * window.innerWidth;
+            const startY = Math.random() * window.innerHeight * 0.5;
+            
+            shootingStar.style.left = startX + 'px';
+            shootingStar.style.top = startY + 'px';
+            
+            document.getElementById('starfield').appendChild(shootingStar);
+            
+            // Animate the shooting star
+            shootingStar.animate([
+                { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                { transform: `translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 + 100}px) scale(0)`, opacity: 0 }
+            ], {
+                duration: 1500,
+                easing: 'ease-out'
+            }).onfinish = () => {
+                shootingStar.remove();
+            };
+        }
+
+        // Create shooting stars periodically
+        setInterval(createShootingStar, 3000);
+    </script>
+</body>
+</html>
