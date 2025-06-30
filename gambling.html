@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gambling</title>
+  <title>Spiele-Seite</title>
   <style>
     * {
       margin: 0;
@@ -60,10 +60,10 @@
       z-index: 2;
       max-width: 600px;
       background-color: rgba(255, 255, 255, 0.05);
-      padding: 3rem 1.5rem; /* Weniger Padding auf kleinen Bildschirmen */
+      padding: 3rem 1.5rem;
       border-radius: 20px;
       box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
-      margin: 4rem auto; /* Weniger Margin oben/unten */
+      margin: 4rem auto;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -312,7 +312,7 @@
   <div class="starfield" id="starfield"></div>
 
   <div class="container" role="main" aria-label="Spielauswahl und Spiele">
-    <h1>Gambling</h1>
+    <h1>Spiele-Seite</h1>
     <select id="game-select" aria-label="Spiel auswählen">
       <option value="wheel">🎡 Glücksrad</option>
       <option value="random">🎲 Zufallszahl</option>
@@ -426,7 +426,8 @@
             ctx.textBaseline = "middle";
             ctx.font = `bold ${size / 22.5}px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif`;
 
-            if (textAngle > Math.PI / 2 && textAngle < 1.5 * Math.PI) {
+            // HIER IST DIE FINALE KORREKTUR
+            if (textAngle >= Math.PI / 2 && textAngle < 1.5 * Math.PI) {
                 ctx.rotate(Math.PI);
                 ctx.fillText(label, -textRadius, 0);
             } else {
@@ -460,7 +461,7 @@
         const sectorAngle = 360 / sectors.length;
         const winningIndex = Math.floor(winningAngle / sectorAngle);
         setTimeout(() => {
-            if (sectors[winningIndex]) {
+            if (sectors[winningIndex] !== undefined) {
                 alert(`"${sectors[winningIndex]}" hat gewonnen!`);
             }
         }, 100);
