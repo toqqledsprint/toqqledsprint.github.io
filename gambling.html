@@ -126,14 +126,13 @@
     }
 
     .game {
-      display: none;
-      width: 100%;
-      flex-direction: column;
-      align-items: center;
+      display: none !important;
     }
 
-    .active {
-      display: flex;
+    .game.active {
+      display: flex !important;
+      flex-direction: column;
+      align-items: center;
     }
 
     .wheel-container {
@@ -215,13 +214,15 @@
     }
 
     #random {
-        width: 100%;
+      width: 100%;
     }
+
     #random-inputs {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
     }
+
     #random input {
       width: 48%;
       font-size: 1.8rem;
@@ -248,6 +249,7 @@
     .coin-container {
       margin-bottom: 1rem;
     }
+
     .coin-wrapper {
       width: 180px;
       height: 180px;
@@ -301,6 +303,66 @@
       box-shadow: 0 0 25px #9c27b0;
     }
 
+    #slot {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .slot-machine {
+      display: flex;
+      justify-content: space-between;
+      margin: 1rem 0;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .reel {
+      width: 80px;
+      height: 80px;
+      background: #111;
+      border: 4px solid #00bcd4;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .symbol {
+      position: absolute;
+      font-size: 2.5rem;
+      opacity: 0;
+      transition: opacity 0.1s;
+    }
+
+    #spinBtn {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 1rem;
+      background: linear-gradient(135deg, #00bcd4, #2196f3);
+      border: none;
+      border-radius: 12px;
+      font-size: 1.3rem;
+      cursor: pointer;
+      box-shadow: 0 0 15px #2196f3;
+      transition: background 0.3s;
+    }
+
+    #spinBtn:hover {
+      background: linear-gradient(135deg, #2196f3, #9c27b0);
+      box-shadow: 0 0 25px #9c27b0;
+    }
+
+    .result {
+      margin-top: 1rem;
+      font-size: 1.5rem;
+      min-height: 2rem;
+      color: #ffc107;
+    }
+
     .container::-webkit-scrollbar {
       display: none;
     }
@@ -317,6 +379,7 @@
       <option value="wheel">🎡 Glücksrad</option>
       <option value="random">🎲 Zufallszahl</option>
       <option value="coin">🪙 Kopf oder Zahl</option>
+      <option value="slot">🎰 Slotmaschine</option>
     </select>
 
     <section id="wheel" class="game active" aria-label="Glücksrad Spiel">
@@ -325,17 +388,34 @@
         <canvas id="wheelCanvas" role="img" aria-label="Glücksrad"></canvas>
       </div>
       <div id="wheel-entries" aria-live="polite" aria-relevant="additions removals"></div>
-      <button type="button" onclick="addWheelEntry()" aria-label="Eintrag hinzufügen zum Glücksrad">➕ Eintrag hinzufügen</button>
+      <button type="button" onclick="addWheelEntry()" aria-label="Eintrag hinzufügen zum Glücksrad">➕ Eintrag
+        hinzufügen</button>
       <button type="button" onclick="spinWheel()" aria-label="Glücksrad drehen">🎡 Drehen</button>
     </section>
 
     <section id="random" class="game" aria-label="Zufallszahl Spiel">
-        <div id="random-inputs">
-            <input type="number" id="min" placeholder="Min" aria-label="Minimale Zahl" />
-            <input type="number" id="max" placeholder="Max" aria-label="Maximale Zahl" />
-        </div>
+      <div id="random-inputs">
+        <input type="number" id="min" placeholder="Min" aria-label="Minimale Zahl" />
+        <input type="number" id="max" placeholder="Max" aria-label="Maximale Zahl" />
+      </div>
       <button type="button" onclick="generateRandom()" aria-label="Zufallszahl generieren">Generieren</button>
       <div id="random-result" role="status" aria-live="polite" aria-atomic="true"></div>
+    </section>
+
+    <section id="slot" class="game" aria-label="Slot Machine Spiel">
+      <div class="slot-machine">
+        <div class="reel">
+          <div class="symbol" id="sym0">🍒</div>
+        </div>
+        <div class="reel">
+          <div class="symbol" id="sym1">🍋</div>
+        </div>
+        <div class="reel">
+          <div class="symbol" id="sym2">🔔</div>
+        </div>
+      </div>
+      <button id="spinBtn">Spin</button>
+      <div class="result" id="resultText"></div>
     </section>
 
     <section id="coin" class="game" aria-label="Kopf oder Zahl Spiel">
@@ -351,7 +431,7 @@
     </section>
   </div>
 
-<script>
+  <script>
     const starfield = document.getElementById('starfield');
     const starCount = 120;
     for (let i = 0; i < starCount; i++) {
@@ -382,60 +462,60 @@
     const colors = ["#ff1744", "#ff9100", "#ffc400", "#00e676", "#00b0ff", "#651fff", "#00bcd4", "#d500f9"];
 
     function drawWheel() {
-        const inputs = document.querySelectorAll("#wheel-entries input");
-        sectors = Array.from(inputs).map(i => i.value.trim()).filter(Boolean);
+      const inputs = document.querySelectorAll("#wheel-entries input");
+      sectors = Array.from(inputs).map(i => i.value.trim()).filter(Boolean);
 
-        const size = canvas.clientWidth;
-        canvas.width = size;
-        canvas.height = size;
+      const size = canvas.clientWidth;
+      canvas.width = size;
+      canvas.height = size;
 
-        const centerX = size / 2;
-        const centerY = size / 2;
-        const radius = size / 2 - 6;
-        const textRadius = radius * 0.65;
+      const centerX = size / 2;
+      const centerY = size / 2;
+      const radius = Math.max(size / 2 - 6, 10);
+      const textRadius = radius * 0.65;
 
-        if (sectors.length === 0) {
-            ctx.clearRect(0, 0, size, size);
-            return;
-        }
-        
-        const arc = 2 * Math.PI / sectors.length;
+      if (sectors.length === 0) {
         ctx.clearRect(0, 0, size, size);
+        return;
+      }
 
-        sectors.forEach((label, i) => {
-            const angle = i * arc;
-            
-            ctx.fillStyle = colors[i % colors.length];
-            ctx.strokeStyle = "#000000";
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(centerX, centerY);
-            ctx.arc(centerX, centerY, radius, angle, angle + arc);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
+      const arc = 2 * Math.PI / sectors.length;
+      ctx.clearRect(0, 0, size, size);
 
-            ctx.save();
-            ctx.fillStyle = "#fff";
-            ctx.translate(centerX, centerY);
-            
-            const textAngle = angle + arc / 2;
-            ctx.rotate(textAngle);
-            
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.font = `bold ${size / 22.5}px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif`;
+      sectors.forEach((label, i) => {
+        const angle = i * arc;
 
-            // HIER IST DIE FINALE KORREKTUR
-            if (textAngle >= Math.PI / 2 && textAngle < 1.5 * Math.PI) {
-                ctx.rotate(Math.PI);
-                ctx.fillText(label, -textRadius, 0);
-            } else {
-                ctx.fillText(label, textRadius, 0);
-            }
-            
-            ctx.restore();
-        });
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, angle, angle + arc);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.save();
+        ctx.fillStyle = "#fff";
+        ctx.translate(centerX, centerY);
+
+        const textAngle = angle + arc / 2;
+        ctx.rotate(textAngle);
+
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = `bold ${size / 22.5}px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif`;
+
+        // HIER IST DIE FINALE KORREKTUR
+        if (textAngle >= Math.PI / 2 && textAngle < 1.5 * Math.PI) {
+          ctx.rotate(Math.PI);
+          ctx.fillText(label, -textRadius, 0);
+        } else {
+          ctx.fillText(label, textRadius, 0);
+        }
+
+        ctx.restore();
+      });
     }
 
 
@@ -454,19 +534,19 @@
     }
 
     function onSpinEnd() {
-        isSpinning = false;
-        const finalRotation = currentRotation % 360;
-        const pointerPosition = 270;
-        let winningAngle = (pointerPosition - finalRotation + 360) % 360;
-        const sectorAngle = 360 / sectors.length;
-        const winningIndex = Math.floor(winningAngle / sectorAngle);
-        setTimeout(() => {
-            if (sectors[winningIndex] !== undefined) {
-                alert(`"${sectors[winningIndex]}" hat gewonnen!`);
-            }
-        }, 100);
+      isSpinning = false;
+      const finalRotation = currentRotation % 360;
+      const pointerPosition = 270;
+      let winningAngle = (pointerPosition - finalRotation + 360) % 360;
+      const sectorAngle = 360 / sectors.length;
+      const winningIndex = Math.floor(winningAngle / sectorAngle);
+      setTimeout(() => {
+        if (sectors[winningIndex] !== undefined) {
+          alert(`"${sectors[winningIndex]}" hat gewonnen!`);
+        }
+      }, 100);
     }
-    
+
     function addWheelEntry(value = "") {
       if (isSpinning) {
         alert("Bitte warten, bis das Glücksrad angehalten hat.");
@@ -550,6 +630,46 @@
         isCoinFlipping = false;
       }, 1500);
     }
+
+    const symbols = ["🍒", "🍋", "🔔", "🍉", "⭐", "7️⃣"];
+    const reels = [document.getElementById("sym0"), document.getElementById("sym1"), document.getElementById("sym2")];
+    const resultText = document.getElementById("resultText");
+    const spinBtn = document.getElementById("spinBtn");
+
+    function spinReel(reelEl, delay) {
+      return new Promise(resolve => {
+        let cycles = 20 + Math.floor(Math.random() * 20);
+        let count = 0;
+        const interval = setInterval(() => {
+          reelEl.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+          reelEl.style.opacity = 1;
+          count++;
+          if (count >= cycles) {
+            clearInterval(interval);
+            resolve(reelEl.textContent);
+          }
+        }, delay);
+      });
+    }
+
+    spinBtn.addEventListener("click", async () => {
+      spinBtn.disabled = true;
+      resultText.textContent = "";
+      const results = await Promise.all([
+        spinReel(reels[0], 50),
+        spinReel(reels[1], 70),
+        spinReel(reels[2], 90)
+      ]);
+
+      if (results[0] === results[1] && results[1] === results[2]) {
+        resultText.textContent = `🎉 Jackpot!`;
+      } else if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) {
+        resultText.textContent = `Zweifach-Kombination!`;
+      } else {
+        resultText.textContent = `Leider hattest du diesmal kein Glück!`;
+      }
+      spinBtn.disabled = false;
+    });
 
     window.scrollTo(0, 0);
   </script>
