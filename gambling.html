@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+  <link rel="icon" type="image/vnd.microsoft.icon" href="img/favicon.ico">
   <title>Gambling</title>
   <style>
     * {
@@ -347,7 +349,7 @@
     }
 
     .reel-strip {
-      transition: transform 8s cubic-bezier(0.25, 1, 0.5, 1);
+      /* The transition is now set dynamically in JS */
     }
 
     .symbol {
@@ -768,7 +770,7 @@
       <option value="blackjack">🃏 Blackjack</option>
     </select>
 
-    <section id="wheel" class="game active" aria-label="Glücksrad Spiel">
+    <section id="wheel" class="game" aria-label="Glücksrad Spiel">
       <div class="wheel-container" aria-hidden="true">
         <div class="pointer"></div>
         <canvas id="wheelCanvas" role="img" aria-label="Glücksrad"></canvas>
@@ -828,7 +830,6 @@
       <div id="lotto-result" role="status" aria-live="polite"></div>
     </section>
 
-    <!-- NEW BLACKJACK SECTION -->
     <section id="blackjack" class="game" aria-label="Blackjack Spiel">
       <section id="dealer-section" aria-label="Dealer Hand">
         <h2>Dealer</h2>
@@ -851,8 +852,12 @@
   </div>
 
   <script>
-    // --- GLOBAL SETUP ---
+    // --- GLOBAL SETUP & CONSTANTS ---
     const starfield = document.getElementById('starfield');
+    const select = document.getElementById("game-select");
+    const games = document.querySelectorAll(".game");
+
+    // --- STARFIELD GENERATION ---
     const starCount = 120;
     for (let i = 0; i < starCount; i++) {
       const star = document.createElement('div');
@@ -865,23 +870,50 @@
       star.style.animationDelay = (Math.random() * 3) + 's';
       starfield.appendChild(star);
     }
+    
+    // --- GAME SELECTION & STATE MANAGEMENT ---
 
-    const select = document.getElementById("game-select");
-    const games = document.querySelectorAll(".game");
+    // This function handles activating a game and running its setup
+    function activateGame(gameId) {
+        // Hide all game sections
+        games.forEach(game => game.classList.remove("active"));
+        
+        // Show the selected one
+        const selectedGame = document.getElementById(gameId);
+        if (selectedGame) {
+            selectedGame.classList.add("active");
+            select.value = gameId; // Sync the dropdown menu
+        }
 
+        // Run game-specific initializations
+        if (gameId === 'slot') {
+            setupReels();
+        }
+        if (gameId === 'blackjack') {
+            startGame();
+        }
+    }
+
+    // Event listener for when the user changes the dropdown
     select.addEventListener("change", () => {
-      games.forEach(game => game.classList.remove("active"));
-      const selectedGame = document.getElementById(select.value);
-      selectedGame.classList.add("active");
-
-      // Game-specific initializations on switch
-      if (select.value === 'slot') {
-        setupReels();
-      }
-      if (select.value === 'blackjack') {
-        startGame(); // Defined in the Blackjack script section
-      }
+        const newGameId = select.value;
+        // Save the user's choice to localStorage
+        localStorage.setItem('lastActiveGame', newGameId);
+        // Activate the newly selected game
+        activateGame(newGameId);
     });
+
+    // When the page first loads, check for a saved game and activate it
+    document.addEventListener('DOMContentLoaded', () => {
+        // Get the last game from localStorage, or default to 'wheel' if none is found
+        const lastGame = localStorage.getItem('lastActiveGame') || 'wheel';
+        activateGame(lastGame);
+        
+        // Initial setup for games that need it on load regardless of visibility
+        drawWheel(); // This is for canvas sizing, important to run on load
+        window.scrollTo(0, 0);
+    });
+
 
     // --- WHEEL OF FORTUNE SCRIPT ---
     const canvas = document.getElementById("wheelCanvas");
@@ -1006,7 +1038,6 @@
     }
     addWheelEntry("Eintrag 1");
     addWheelEntry("Eintrag 2");
-    drawWheel();
     window.addEventListener('resize', drawWheel);
 
     // --- RANDOM NUMBER SCRIPT ---
@@ -1111,7 +1142,7 @@
         const finalPosition = targetIndex * symbolHeight - symbolHeight;
         const promise = new Promise(resolve => {
           strip.offsetHeight;
-          strip.style.transition = `transform ${8 + i * 0.5}s cubic-bezier(0.25, 1, 0.5, 1)`;
+          strip.style.transition = `transform ${10 + i * 0.5}s cubic-bezier(0.23, 1, 0.32, 1)`;
           strip.style.transform = `translateY(-${finalPosition}px)`;
           strip.addEventListener('transitionend', () => {
             strip.style.transition = 'none';
@@ -1137,8 +1168,7 @@
       spinSlotBtn.disabled = false;
     }
     spinSlotBtn.addEventListener("click", spinSlot);
-    setupReels();
-
+    
     // --- LOTTO SCRIPT ---
     const lottoPicker = document.getElementById("lotto-picker");
     const superzahlPicker = document.getElementById("superzahl-picker");
@@ -1267,15 +1297,13 @@
       });
     }
 
-    // --- NEW BLACKJACK SCRIPT ---
+    // --- BLACKJACK SCRIPT ---
     const bjSuits = ['♠', '♥', '♦', '♣'];
     const bjValues = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-
     let bjDeck = [];
     let dealerHand = [];
     let playerHand = [];
     let isGameOver = false;
-
     const dealerHandEl = document.getElementById('dealer-hand');
     const playerHandEl = document.getElementById('player-hand');
     const dealerScoreEl = document.getElementById('dealer-score');
@@ -1289,10 +1317,7 @@
       bjDeck = [];
       for (let suit of bjSuits) {
         for (let value of bjValues) {
-          bjDeck.push({
-            suit,
-            value
-          });
+          bjDeck.push({ suit, value });
         }
       }
     }
@@ -1351,16 +1376,12 @@
       restartBtn.style.display = 'none';
       hitBtn.disabled = false;
       standBtn.disabled = false;
-
       createDeck();
       shuffleDeck();
-
       dealerHand = [bjDeck.pop(), bjDeck.pop()];
       playerHand = [bjDeck.pop(), bjDeck.pop()];
-
       renderHand(dealerHandEl, dealerHand, true);
       renderHand(playerHandEl, playerHand);
-
       if (!checkForEnd()) {
         updateScores(true);
       }
@@ -1376,38 +1397,27 @@
       let playerScore = calculateScore(playerHand);
       dealerScoreEl.textContent = 'Punkte: ' + dealerScore;
       playerScoreEl.textContent = 'Punkte: ' + playerScore;
-
-      return {
-        dealerScore,
-        playerScore
-      };
+      return { dealerScore, playerScore };
     }
 
     function checkForEnd() {
-      let {
-        playerScore
-      } = updateScores();
+      let { playerScore } = updateScores();
       if (playerScore > 21) {
         endGame('Du hast überkauft! Dealer gewinnt.');
         return true;
       }
       if (playerScore === 21 && playerHand.length === 2) {
-        // Player has blackjack, check if dealer also has it
-        dealerTurn(); // Reveal dealer's hand to check for push
+        dealerTurn();
         return true;
       }
       return false;
     }
 
-
     function dealerTurn() {
         hitBtn.disabled = true;
         standBtn.disabled = true;
-
-        renderHand(dealerHandEl, dealerHand, false); // Reveal dealer's second card
+        renderHand(dealerHandEl, dealerHand, false);
         updateScores(false);
-
-        // Check for immediate end conditions (like player blackjack)
         const playerScore = calculateScore(playerHand);
         const dealerScore = calculateScore(dealerHand);
         if (playerScore === 21 && playerHand.length === 2 && dealerScore !== 21) {
@@ -1418,7 +1428,6 @@
              endGame('Unentschieden! (Push)');
              return;
         }
-
         function dealerDraw() {
             let currentDealerScore = calculateScore(dealerHand);
             if (currentDealerScore < 17) {
@@ -1436,7 +1445,6 @@
     function finalizeGame() {
       const dealerScore = calculateScore(dealerHand);
       const playerScore = calculateScore(playerHand);
-
       if (dealerScore > 21 || playerScore > dealerScore) {
         endGame('Du gewinnst!');
       } else if (playerScore < dealerScore) {
@@ -1452,7 +1460,7 @@
       hitBtn.disabled = true;
       standBtn.disabled = true;
       restartBtn.style.display = 'block';
-      renderHand(dealerHandEl, dealerHand, false); // Always show dealer's full hand at the end
+      renderHand(dealerHandEl, dealerHand, false);
       updateScores(false);
     }
 
@@ -1473,9 +1481,6 @@
     restartBtn.addEventListener('click', () => {
       startGame();
     });
-
-    // --- INITIAL PAGE LOAD ---
-    window.scrollTo(0, 0);
   </script>
 </body>
 
