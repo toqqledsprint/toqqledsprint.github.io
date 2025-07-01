@@ -133,8 +133,10 @@
       display: flex !important;
       flex-direction: column;
       align-items: center;
+      width: 100%;
     }
 
+    /* Wheel CSS */
     .wheel-container {
       position: relative;
       width: 90vw;
@@ -213,6 +215,7 @@
       background: #ff1744;
     }
 
+    /* Random Number CSS */
     #random {
       width: 100%;
     }
@@ -246,6 +249,7 @@
       user-select: none;
     }
 
+    /* Coin Flip CSS */
     .coin-container {
       margin-bottom: 1rem;
     }
@@ -302,6 +306,7 @@
       box-shadow: 0 0 25px #9c27b0;
     }
 
+    /* Slot Machine CSS */
     #slot {
       width: 100%;
       display: flex;
@@ -318,49 +323,31 @@
       position: relative;
     }
 
-    /* NEW: The overlay for the winning line */
-.slot-machine {
-    display: flex;
-    justify-content: space-between;
-    margin: 1rem 0;
-    width: 100%;
-    max-width: 320px;
-    position: relative; /* Wichtig für die Positionierung des Overlays */
-}
+    .reel {
+      width: 80px;
+      height: 240px;
+      background-color: rgba(0, 0, 0, 0.2);
+      border: 4px solid #00bcd4;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
 
-.reel {
-    width: 80px;
-    height: 240px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border: 4px solid #00bcd4;
-    border-radius: 12px;
-    overflow: hidden;
-    position: relative; /* Jede Walze ist nun ein eigener Anker */
-}
-
-/* NEU: Der präzise, zentrierte Rahmen für JEDE Walze */
-.reel::after {
-    content: '';
-    position: absolute;
-    top: 80px; /* Bleibt gleich, positioniert es vertikal korrekt */
-    height: 80px; /* Bleibt gleich, Höhe eines Symbols */
-
-    /* NEU: Positionierung bis an die Außenkante */
-    left: -4px;  /* Geht 4px nach links (Breite des türkisen Rahmens) */
-    right: -4px; /* Geht 4px nach rechts */
-
-    /* NEU: Nur horizontale Linien, damit sie perfekt anschließen */
-    border-top: 3px solid #ffc107;
-    border-bottom: 3px solid #ffc107;
-    
-    /* Der Glanz-Effekt bleibt erhalten */
-    box-shadow: 0 0 12px rgba(255, 193, 7, 0.6);
-
-    pointer-events: none;
-}
+    .reel::after {
+      content: '';
+      position: absolute;
+      top: 80px;
+      height: 80px;
+      left: -4px;
+      right: -4px;
+      border-top: 3px solid #ffc107;
+      border-bottom: 3px solid #ffc107;
+      box-shadow: 0 0 12px rgba(255, 193, 7, 0.6);
+      pointer-events: none;
+    }
 
     .reel-strip {
-      transition: transform 4s cubic-bezier(0.25, 1, 0.5, 1);
+      transition: transform 8s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     .symbol {
@@ -403,6 +390,7 @@
       color: #ffc107;
     }
 
+    /* Lotto CSS */
     .container::-webkit-scrollbar {
       display: none;
     }
@@ -478,7 +466,6 @@
       background: radial-gradient(circle, #ff0077);
       box-shadow: 0 0 15px #ff0077;
       border-color: #ff0077;
-      ;
       color: #000;
       font-weight: 900;
     }
@@ -489,7 +476,6 @@
       color: #fff !important;
       box-shadow: 0 0 10px #4caf50 !important;
       border-color: #388e3c !important;
-      ;
     }
 
     #lotto-picker label.incorrect,
@@ -498,7 +484,6 @@
       color: #fff !important;
       box-shadow: 0 0 10px #f44336 !important;
       border-color: #d32f2f !important;
-      ;
     }
 
     #lotto-picker label.missing,
@@ -507,7 +492,6 @@
       color: #fff !important;
       box-shadow: 0 0 10px #444 !important;
       border-color: #444 !important;
-      ;
     }
 
     .sr-only {
@@ -531,6 +515,241 @@
       min-height: 2rem;
       user-select: none;
     }
+
+    #newLottoGameBtn {
+      box-shadow: 0 0 18px #e040fb;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    #newLottoGameBtn:hover {
+      box-shadow: 0 0 25px #ff4081;
+    }
+
+    /* --- NEW BLACKJACK CSS --- */
+    #blackjack h2 {
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+
+    #blackjack .hand {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 1rem;
+      min-height: 140px;
+      justify-content: center;
+      padding: 0;
+      border-radius: 16px;
+      margin-bottom: 0.5rem;
+      width: 100%;
+    }
+
+    #blackjack .score {
+      font-size: 1.3rem;
+      margin-top: 0.2rem;
+      margin-bottom: 1rem;
+      color: #ffc107;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    #blackjack .card {
+      background: #fff;
+      border-radius: 16px;
+      width: 90px;
+      height: 130px;
+      box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.7),
+        inset 0 0 6px #bbb;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 10px 12px;
+      font-weight: 700;
+      color: #000;
+      position: relative;
+      font-size: 1.4rem;
+      cursor: default;
+      user-select: none;
+      transition: transform 0.3s ease;
+    }
+
+    #blackjack .card.red {
+      color: #d22345;
+    }
+
+    #blackjack .corner.top-left {
+      position: absolute;
+      top: 8px;
+      left: 10px;
+      font-size: 1.5rem;
+      font-weight: 900;
+      user-select: none;
+      pointer-events: none;
+      line-height: 1;
+    }
+
+    #blackjack .corner.bottom-right {
+      position: absolute;
+      bottom: 8px;
+      right: 10px;
+      font-size: 1.5rem;
+      font-weight: 900;
+      user-select: none;
+      pointer-events: none;
+      transform: rotate(180deg);
+      line-height: 1;
+    }
+
+    #blackjack .symbol-center {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4rem;
+      user-select: none;
+      pointer-events: none;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      line-height: 1;
+    }
+
+    #blackjack .card.covered {
+      background: linear-gradient(135deg, #111, #222);
+      box-shadow:
+        0 4px 10px rgba(255, 64, 129, 0.8),
+        inset 0 0 10px #ff4081;
+      position: relative;
+    }
+
+    #blackjack .card.covered::after {
+      content: "";
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      background: repeating-linear-gradient(45deg,
+          rgba(255, 64, 129, 0.3),
+          rgba(255, 64, 129, 0.3) 5px,
+          transparent 5px,
+          transparent 10px);
+      border-radius: 16px;
+    }
+
+    #blackjack #buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+      width: 100%;
+    }
+
+    /* Scoped button styles to only affect Blackjack buttons */
+    #blackjack #buttons button {
+      background: linear-gradient(135deg, #00bcd4, #2196f3);
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 0 18px #2196f3;
+      transition: background 0.3s ease;
+      user-select: none;
+      flex: 1;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      width: auto; /* Override generic button width */
+      margin-bottom: 0; /* Override generic button margin */
+    }
+
+    #blackjack #buttons button:hover:not(:disabled) {
+      background: linear-gradient(135deg, #2196f3, #9c27b0);
+      box-shadow: 0 0 25px #9c27b0;
+    }
+
+    #blackjack #buttons button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    
+    #blackjack #restart-btn {
+      margin-top: 1.5rem;
+      background: linear-gradient(135deg, #ff4081, #e040fb);
+      box-shadow: 0 0 18px #e040fb;
+    }
+
+    #blackjack #restart-btn:hover {
+      background: linear-gradient(135deg, #e040fb, #ff4081);
+      box-shadow: 0 0 25px #ff4081;
+    }
+
+    #blackjack #result {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #ffc107;
+      min-height: 2.5rem;
+      margin-top: 1rem;
+      user-select: none;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 600px) {
+      #lotto-picker {
+        grid-template-columns: repeat(7, 40px);
+        gap: 6px;
+      }
+
+      #lotto-picker label {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+
+      #superzahl-picker {
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      #superzahl-picker label {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+      }
+    }
+    
+    @media (max-width: 400px) {
+      #blackjack .card {
+        width: 70px;
+        height: 100px;
+        font-size: 1.1rem;
+      }
+      #blackjack .symbol-center {
+        font-size: 3rem;
+      }
+    }
+
+    @media (max-width: 380px) {
+      #lotto-picker {
+        grid-template-columns: repeat(7, 34px);
+        gap: 4px;
+      }
+
+      #lotto-picker label {
+        width: 34px;
+        height: 34px;
+        font-size: 0.9rem;
+      }
+
+      #superzahl-picker label {
+        width: 34px;
+        height: 34px;
+        font-size: 1rem;
+      }
+    }
   </style>
 </head>
 
@@ -545,7 +764,8 @@
       <option value="random">🎲 Zufallszahl</option>
       <option value="coin">🪙 Kopf oder Zahl</option>
       <option value="slot">🎰 Slotmaschine</option>
-      <option value="lotto">🎯 Lottozahlen (6 aus 49)</option>
+      <option value="lotto">🎯 Lotto (6 aus 49)</option>
+      <option value="blackjack">🃏 Blackjack</option>
     </select>
 
     <section id="wheel" class="game active" aria-label="Glücksrad Spiel">
@@ -584,7 +804,6 @@
         <div class="reel" id="reel0"></div>
         <div class="reel" id="reel1"></div>
         <div class="reel" id="reel2"></div>
-        <div class="slot-overlay"></div> <!-- The new winning line frame -->
       </div>
       <button id="spinBtn">Spin</button>
       <div class="result" id="resultText"></div>
@@ -609,34 +828,62 @@
       <div id="lotto-result" role="status" aria-live="polite"></div>
     </section>
 
+    <!-- NEW BLACKJACK SECTION -->
+    <section id="blackjack" class="game" aria-label="Blackjack Spiel">
+      <section id="dealer-section" aria-label="Dealer Hand">
+        <h2>Dealer</h2>
+        <div class="hand" id="dealer-hand" aria-live="polite" aria-atomic="true"></div>
+        <div class="score" id="dealer-score">Punkte: 0</div>
+      </section>
+      <section id="player-section" aria-label="Spieler Hand">
+        <h2>Du</h2>
+        <div class="hand" id="player-hand" aria-live="polite" aria-atomic="true"></div>
+        <div class="score" id="player-score">Punkte: 0</div>
+      </section>
+      <div id="buttons">
+        <button id="hit-btn" aria-label="Karte ziehen">Ziehen</button>
+        <button id="stand-btn" aria-label="Stehen bleiben">Halten</button>
+      </div>
+      <button id="restart-btn" aria-label="Neues Spiel starten" style="display:none;">Neue Runde</button>
+      <div id="result" aria-live="polite" aria-atomic="true"></div>
+    </section>
+
   </div>
 
-<script>
+  <script>
+    // --- GLOBAL SETUP ---
     const starfield = document.getElementById('starfield');
     const starCount = 120;
     for (let i = 0; i < starCount; i++) {
-        const star = document.createElement('div');
-        star.classList.add('star');
-        const size = Math.random() * 2 + 1 + 'px';
-        star.style.width = size;
-        star.style.height = size;
-        star.style.top = Math.random() * 100 + '%';
-        star.style.left = Math.random() * 100 + '%';
-        star.style.animationDelay = (Math.random() * 3) + 's';
-        starfield.appendChild(star);
+      const star = document.createElement('div');
+      star.classList.add('star');
+      const size = Math.random() * 2 + 1 + 'px';
+      star.style.width = size;
+      star.style.height = size;
+      star.style.top = Math.random() * 100 + '%';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.animationDelay = (Math.random() * 3) + 's';
+      starfield.appendChild(star);
     }
 
     const select = document.getElementById("game-select");
     const games = document.querySelectorAll(".game");
+
     select.addEventListener("change", () => {
-        games.forEach(game => game.classList.remove("active"));
-        const selectedGame = document.getElementById(select.value);
-        selectedGame.classList.add("active");
-        if (select.value === 'slot') {
-            setupReels();
-        }
+      games.forEach(game => game.classList.remove("active"));
+      const selectedGame = document.getElementById(select.value);
+      selectedGame.classList.add("active");
+
+      // Game-specific initializations on switch
+      if (select.value === 'slot') {
+        setupReels();
+      }
+      if (select.value === 'blackjack') {
+        startGame(); // Defined in the Blackjack script section
+      }
     });
 
+    // --- WHEEL OF FORTUNE SCRIPT ---
     const canvas = document.getElementById("wheelCanvas");
     const ctx = canvas.getContext("2d");
     let sectors = [];
@@ -645,161 +892,164 @@
     const colors = ["#ff1744", "#ff9100", "#ffc400", "#00e676", "#00b0ff", "#651fff", "#00bcd4", "#d500f9"];
 
     function drawWheel() {
-        const inputs = document.querySelectorAll("#wheel-entries input");
-        sectors = Array.from(inputs).map(i => i.value.trim()).filter(Boolean);
-        const size = canvas.clientWidth;
-        canvas.width = size;
-        canvas.height = size;
-        const centerX = size / 2;
-        const centerY = size / 2;
-        const radius = Math.max(size / 2 - 6, 10);
-        const textRadius = radius * 0.65;
-        if (sectors.length === 0) {
-            ctx.clearRect(0, 0, size, size);
-            return;
-        }
-        const arc = 2 * Math.PI / sectors.length;
+      const inputs = document.querySelectorAll("#wheel-entries input");
+      sectors = Array.from(inputs).map(i => i.value.trim()).filter(Boolean);
+      const size = canvas.clientWidth;
+      canvas.width = size;
+      canvas.height = size;
+      const centerX = size / 2;
+      const centerY = size / 2;
+      const radius = Math.max(size / 2 - 6, 10);
+      const textRadius = radius * 0.65;
+      if (sectors.length === 0) {
         ctx.clearRect(0, 0, size, size);
-        sectors.forEach((label, i) => {
-            const angle = i * arc;
-            ctx.fillStyle = colors[i % colors.length];
-            ctx.strokeStyle = "#000000";
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(centerX, centerY);
-            ctx.arc(centerX, centerY, radius, angle, angle + arc);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-            ctx.save();
-            ctx.fillStyle = "#fff";
-            ctx.translate(centerX, centerY);
-            const textAngle = angle + arc / 2;
-            ctx.rotate(textAngle);
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.font = `bold ${size / 22.5}px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif`;
-            if (textAngle >= Math.PI / 2 && textAngle < 1.5 * Math.PI) {
-                ctx.rotate(Math.PI);
-                ctx.fillText(label, -textRadius, 0);
-            } else {
-                ctx.fillText(label, textRadius, 0);
-            }
-            ctx.restore();
-        });
+        return;
+      }
+      const arc = 2 * Math.PI / sectors.length;
+      ctx.clearRect(0, 0, size, size);
+      sectors.forEach((label, i) => {
+        const angle = i * arc;
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, angle, angle + arc);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.save();
+        ctx.fillStyle = "#fff";
+        ctx.translate(centerX, centerY);
+        const textAngle = angle + arc / 2;
+        ctx.rotate(textAngle);
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = `bold ${size / 22.5}px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif`;
+        if (textAngle >= Math.PI / 2 && textAngle < 1.5 * Math.PI) {
+          ctx.rotate(Math.PI);
+          ctx.fillText(label, -textRadius, 0);
+        } else {
+          ctx.fillText(label, textRadius, 0);
+        }
+        ctx.restore();
+      });
     }
 
     function spinWheel() {
-        if (isSpinning) return;
-        drawWheel();
-        if (sectors.length < 2) {
-            alert("Bitte füge mindestens zwei Einträge hinzu.");
-            return;
-        }
-        isSpinning = true;
-        const additionalRotation = (Math.random() * 360) + (5 * 360);
-        currentRotation += additionalRotation;
-        canvas.style.transform = `rotate(${currentRotation}deg)`;
-        canvas.addEventListener('transitionend', onSpinEnd, {
-            once: true
-        });
+      if (isSpinning) return;
+      drawWheel();
+      if (sectors.length < 2) {
+        alert("Bitte füge mindestens zwei Einträge hinzu.");
+        return;
+      }
+      isSpinning = true;
+      const additionalRotation = (Math.random() * 360) + (5 * 360);
+      currentRotation += additionalRotation;
+      canvas.style.transform = `rotate(${currentRotation}deg)`;
+      canvas.addEventListener('transitionend', onSpinEnd, {
+        once: true
+      });
     }
 
     function onSpinEnd() {
-        isSpinning = false;
-        const finalRotation = currentRotation % 360;
-        const pointerPosition = 270;
-        let winningAngle = (pointerPosition - finalRotation + 360) % 360;
-        const sectorAngle = 360 / sectors.length;
-        const winningIndex = Math.floor(winningAngle / sectorAngle);
-        setTimeout(() => {
-            if (sectors[winningIndex] !== undefined) {
-                alert(`"${sectors[winningIndex]}" hat gewonnen!`);
-            }
-        }, 100);
+      isSpinning = false;
+      const finalRotation = currentRotation % 360;
+      const pointerPosition = 270;
+      let winningAngle = (pointerPosition - finalRotation + 360) % 360;
+      const sectorAngle = 360 / sectors.length;
+      const winningIndex = Math.floor(winningAngle / sectorAngle);
+      setTimeout(() => {
+        if (sectors[winningIndex] !== undefined) {
+          alert(`"${sectors[winningIndex]}" hat gewonnen!`);
+        }
+      }, 100);
     }
 
     function addWheelEntry(value = "") {
+      if (isSpinning) {
+        alert("Bitte warten, bis das Rad angehalten hat.");
+        return;
+      }
+      const container = document.getElementById("wheel-entries");
+      const entry = document.createElement("div");
+      entry.className = "wheel-entry";
+      const input = document.createElement("input");
+      input.type = "text";
+      input.placeholder = "Neuer Eintrag";
+      input.value = value;
+      input.autocomplete = "off";
+      input.spellcheck = false;
+      entry.appendChild(input);
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.textContent = "×";
+      removeBtn.title = "Eintrag entfernen";
+      removeBtn.onclick = () => {
         if (isSpinning) {
-            alert("Bitte warten, bis das Rad angehalten hat.");
-            return;
+          alert("Bitte warten, bis das Rad angehalten hat.");
+          return;
         }
-        const container = document.getElementById("wheel-entries");
-        const entry = document.createElement("div");
-        entry.className = "wheel-entry";
-        const input = document.createElement("input");
-        input.type = "text";
-        input.placeholder = "Neuer Eintrag";
-        input.value = value;
-        input.autocomplete = "off";
-        input.spellcheck = false;
-        entry.appendChild(input);
-        const removeBtn = document.createElement("button");
-        removeBtn.type = "button";
-        removeBtn.textContent = "×";
-        removeBtn.title = "Eintrag entfernen";
-        removeBtn.onclick = () => {
-            if (isSpinning) {
-                alert("Bitte warten, bis das Rad angehalten hat.");
-                return;
-            }
-            if (container.children.length > 2) {
-                container.removeChild(entry);
-                drawWheel();
-            } else {
-                alert("Das Glücksrad muss mindestens zwei Einträge haben.");
-            }
-        };
-        entry.appendChild(removeBtn);
-        input.addEventListener("input", () => drawWheel());
-        container.appendChild(entry);
-        if (value === "") {
-            input.focus();
+        if (container.children.length > 2) {
+          container.removeChild(entry);
+          drawWheel();
+        } else {
+          alert("Das Glücksrad muss mindestens zwei Einträge haben.");
         }
+      };
+      entry.appendChild(removeBtn);
+      input.addEventListener("input", () => drawWheel());
+      container.appendChild(entry);
+      if (value === "") {
+        input.focus();
+      }
     }
     addWheelEntry("Eintrag 1");
     addWheelEntry("Eintrag 2");
     drawWheel();
     window.addEventListener('resize', drawWheel);
 
+    // --- RANDOM NUMBER SCRIPT ---
     function generateRandom() {
-        const minInput = document.getElementById("min");
-        const maxInput = document.getElementById("max");
-        const min = parseInt(minInput.value, 10);
-        const max = parseInt(maxInput.value, 10);
-        if (isNaN(min) || isNaN(max)) {
-            alert("Bitte gib gültige Zahlen für Min und Max ein.");
-            return;
-        }
-        if (min > max) {
-            alert("Die 'Min'-Zahl darf nicht größer als die 'Max'-Zahl sein.");
-            return;
-        }
-        const result = Math.floor(Math.random() * (max - min + 1)) + min;
-        const output = document.getElementById("random-result");
-        output.textContent = "...";
-        setTimeout(() => {
-            output.textContent = result;
-        }, 300);
+      const minInput = document.getElementById("min");
+      const maxInput = document.getElementById("max");
+      const min = parseInt(minInput.value, 10);
+      const max = parseInt(maxInput.value, 10);
+      if (isNaN(min) || isNaN(max)) {
+        alert("Bitte gib gültige Zahlen für Min und Max ein.");
+        return;
+      }
+      if (min > max) {
+        alert("Die 'Min'-Zahl darf nicht größer als die 'Max'-Zahl sein.");
+        return;
+      }
+      const result = Math.floor(Math.random() * (max - min + 1)) + min;
+      const output = document.getElementById("random-result");
+      output.textContent = "...";
+      setTimeout(() => {
+        output.textContent = result;
+      }, 300);
     }
+
+    // --- COIN FLIP SCRIPT ---
     let coinRotation = 0;
     let isCoinFlipping = false;
 
     function flipCoin() {
-        if (isCoinFlipping) return;
-        isCoinFlipping = true;
-        const coin = document.getElementById("coinElement");
-        const isKopf = Math.random() < 0.5;
-        const spins = 6 * 360;
-        coinRotation = Math.ceil(coinRotation / 360) * 360;
-        coinRotation += spins + (isKopf ? 0 : 180);
-        coin.style.transform = `rotateY(${coinRotation}deg)`;
-        setTimeout(() => {
-            isCoinFlipping = false;
-        }, 1500);
+      if (isCoinFlipping) return;
+      isCoinFlipping = true;
+      const coin = document.getElementById("coinElement");
+      const isKopf = Math.random() < 0.5;
+      const spins = 6 * 360;
+      coinRotation = Math.ceil(coinRotation / 360) * 360;
+      coinRotation += spins + (isKopf ? 0 : 180);
+      coin.style.transform = `rotateY(${coinRotation}deg)`;
+      setTimeout(() => {
+        isCoinFlipping = false;
+      }, 1500);
     }
 
-    // --- SLOT MACHINE SCRIPT (NEU & KORRIGIERT) ---
+    // --- SLOT MACHINE SCRIPT ---
     const slotSymbols = ["🍒", "🍋", "🔔", "🍉", "⭐", "7️⃣"];
     const slotResultText = document.getElementById("resultText");
     const spinSlotBtn = document.getElementById("spinBtn");
@@ -808,108 +1058,86 @@
     let isSlotSpinning = false;
 
     function shuffle(array) {
-        let currentIndex = array.length,
-            randomIndex;
-        while (currentIndex != 0) {
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex--;
-            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
-        }
-        return array;
+      let currentIndex = array.length,
+        randomIndex;
+      while (currentIndex != 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+      }
+      return array;
     }
-    
-    // KORRIGIERTE `setupReels` FUNKTION
+
     function setupReels() {
-        reelElements.forEach(reel => {
-            reel.innerHTML = '';
-            const strip = document.createElement('div');
-            strip.classList.add('reel-strip');
-            
-            const baseSymbols = shuffle([...slotSymbols]);
-            const stripSymbols = [...baseSymbols, ...baseSymbols, ...baseSymbols, ...baseSymbols, ...baseSymbols];
-            
-            stripSymbols.forEach(symbol => {
-                const symbolEl = document.createElement('div');
-                symbolEl.classList.add('symbol');
-                symbolEl.textContent = symbol;
-                strip.appendChild(symbolEl);
-            });
-            
-            // Setzt die Startposition sofort und ohne Animation
-            strip.style.transition = 'none';
-            // Startposition in der Mitte des Streifens, damit es genug Platz zum Drehen gibt
-            const startPosition = (baseSymbols.length * 2) * symbolHeight - symbolHeight;
-            // Wichtig: `translateY` mit einem negativen Wert, um nach OBEN zu schieben
-            strip.style.transform = `translateY(-${startPosition}px)`;
-            
-            reel.appendChild(strip);
+      reelElements.forEach(reel => {
+        reel.innerHTML = '';
+        const strip = document.createElement('div');
+        strip.classList.add('reel-strip');
+        const baseSymbols = shuffle([...slotSymbols]);
+        const stripSymbols = [...baseSymbols, ...baseSymbols, ...baseSymbols, ...baseSymbols, ...baseSymbols];
+        stripSymbols.forEach(symbol => {
+          const symbolEl = document.createElement('div');
+          symbolEl.classList.add('symbol');
+          symbolEl.textContent = symbol;
+          strip.appendChild(symbolEl);
         });
+        strip.style.transition = 'none';
+        const startPosition = (baseSymbols.length * 2) * symbolHeight - symbolHeight;
+        strip.style.transform = `translateY(-${startPosition}px)`;
+        reel.appendChild(strip);
+      });
     }
 
     async function spinSlot() {
-        if (isSlotSpinning) return;
-        isSlotSpinning = true;
-        spinSlotBtn.disabled = true;
-        slotResultText.textContent = "";
-
-        const results = [];
-        const promises = [];
-
-        for (let i = 0; i < reelElements.length; i++) {
-            const reel = reelElements[i];
-            const strip = reel.querySelector('.reel-strip');
-
-            const targetSymbol = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
-            results.push(targetSymbol);
-
-            const stripChildren = Array.from(strip.children);
-            let targetIndex = -1;
-            // Wir suchen das Ziel-Symbol im 4. Block, damit wir genug Platz haben
-            for (let j = slotSymbols.length * 3; j < slotSymbols.length * 4; j++) {
-                if (stripChildren[j].textContent === targetSymbol) {
-                    targetIndex = j;
-                    break;
-                }
-            }
-            
-            // Die Endposition wird so berechnet, dass das Ziel-Symbol mittig landet
-            const finalPosition = targetIndex * symbolHeight - symbolHeight;
-
-            const promise = new Promise(resolve => {
-                // Die `offsetHeight` Abfrage zwingt den Browser, die vorherige `transition: none` Änderung zu verarbeiten
-                strip.offsetHeight; 
-                strip.style.transition = `transform ${4 + i * 0.5}s cubic-bezier(0.25, 1, 0.5, 1)`;
-                strip.style.transform = `translateY(-${finalPosition}px)`;
-
-                strip.addEventListener('transitionend', () => {
-                    strip.style.transition = 'none';
-                    // Setzt die Walze heimlich auf eine äquivalente Position zurück
-                    const resetIndex = targetIndex - (slotSymbols.length * 2);
-                    const resetPosition = resetIndex * symbolHeight - symbolHeight;
-                    strip.style.transform = `translateY(-${resetPosition}px)`;
-                    resolve();
-                }, { once: true });
-            });
-            promises.push(promise);
+      if (isSlotSpinning) return;
+      isSlotSpinning = true;
+      spinSlotBtn.disabled = true;
+      slotResultText.textContent = "";
+      const results = [];
+      const promises = [];
+      for (let i = 0; i < reelElements.length; i++) {
+        const reel = reelElements[i];
+        const strip = reel.querySelector('.reel-strip');
+        const targetSymbol = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+        results.push(targetSymbol);
+        const stripChildren = Array.from(strip.children);
+        let targetIndex = -1;
+        for (let j = slotSymbols.length * 3; j < slotSymbols.length * 4; j++) {
+          if (stripChildren[j].textContent === targetSymbol) {
+            targetIndex = j;
+            break;
+          }
         }
-
-        await Promise.all(promises);
-
-        if (results[0] === results[1] && results[1] === results[2]) {
-            slotResultText.textContent = `🎉 Jackpot!`;
-        } else if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) {
-            slotResultText.textContent = `Zweifach-Kombi!`;
-        } else {
-            slotResultText.textContent = `Probier's einfach nochmal!`;
-        }
-
-        isSlotSpinning = false;
-        spinSlotBtn.disabled = false;
+        const finalPosition = targetIndex * symbolHeight - symbolHeight;
+        const promise = new Promise(resolve => {
+          strip.offsetHeight;
+          strip.style.transition = `transform ${8 + i * 0.5}s cubic-bezier(0.25, 1, 0.5, 1)`;
+          strip.style.transform = `translateY(-${finalPosition}px)`;
+          strip.addEventListener('transitionend', () => {
+            strip.style.transition = 'none';
+            const resetIndex = targetIndex - (slotSymbols.length * 2);
+            const resetPosition = resetIndex * symbolHeight - symbolHeight;
+            strip.style.transform = `translateY(-${resetPosition}px)`;
+            resolve();
+          }, {
+            once: true
+          });
+        });
+        promises.push(promise);
+      }
+      await Promise.all(promises);
+      if (results[0] === results[1] && results[1] === results[2]) {
+        slotResultText.textContent = `🎉 Jackpot!`;
+      } else if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) {
+        slotResultText.textContent = `Zweifach-Kombi!`;
+      } else {
+        slotResultText.textContent = `Probier's einfach nochmal!`;
+      }
+      isSlotSpinning = false;
+      spinSlotBtn.disabled = false;
     }
-
     spinSlotBtn.addEventListener("click", spinSlot);
     setupReels();
-
 
     // --- LOTTO SCRIPT ---
     const lottoPicker = document.getElementById("lotto-picker");
@@ -920,128 +1148,335 @@
     const lottoResultDiv = document.getElementById("lotto-result");
 
     for (let i = 1; i <= 49; i++) {
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.id = `lotto-num-${i}`;
-        checkbox.name = "lotto-num";
-        checkbox.value = i;
-        checkbox.addEventListener("change", e => {
-            const checked = document.querySelectorAll('input[name="lotto-num"]:checked');
-            if (checked.length > 6) {
-                e.target.checked = false;
-                alert("Du kannst nur bis zu 6 Lottozahlen auswählen.");
-            }
-        });
-        const label = document.createElement("label");
-        label.htmlFor = checkbox.id;
-        label.textContent = i < 10 ? "0" + i : i;
-        lottoPicker.appendChild(checkbox);
-        lottoPicker.appendChild(label);
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.id = `lotto-num-${i}`;
+      checkbox.name = "lotto-num";
+      checkbox.value = i;
+      checkbox.addEventListener("change", e => {
+        const checked = document.querySelectorAll('input[name="lotto-num"]:checked');
+        if (checked.length > 6) {
+          e.target.checked = false;
+          alert("Du kannst nur bis zu 6 Lottozahlen auswählen.");
+        }
+      });
+      const label = document.createElement("label");
+      label.htmlFor = checkbox.id;
+      label.textContent = i < 10 ? "0" + i : i;
+      lottoPicker.appendChild(checkbox);
+      lottoPicker.appendChild(label);
     }
-
     for (let i = 0; i <= 9; i++) {
-        const radio = document.createElement("input");
-        radio.type = "radio";
-        radio.id = `superzahl-${i}`;
-        radio.name = "superzahl";
-        radio.value = i;
-        const label = document.createElement("label");
-        label.htmlFor = radio.id;
-        label.textContent = i;
-        superzahlPicker.appendChild(radio);
-        superzahlPicker.appendChild(label);
+      const radio = document.createElement("input");
+      radio.type = "radio";
+      radio.id = `superzahl-${i}`;
+      radio.name = "superzahl";
+      radio.value = i;
+      const label = document.createElement("label");
+      label.htmlFor = radio.id;
+      label.textContent = i;
+      superzahlPicker.appendChild(radio);
+      superzahlPicker.appendChild(label);
     }
-
     generateLottoBtn.addEventListener("click", () => {
-        resetLottoField();
-        const numbers = new Set();
-        while (numbers.size < 6) {
-            numbers.add(Math.floor(Math.random() * 49) + 1);
-        }
-        const sorted = [...numbers].sort((a, b) => a - b);
-        sorted.forEach(num => {
-            const box = document.getElementById(`lotto-num-${num}`);
-            if (box) box.checked = true;
-        });
-        const superzahl = Math.floor(Math.random() * 10);
-        const superRadio = document.getElementById(`superzahl-${superzahl}`);
-        if (superRadio) superRadio.checked = true;
+      resetLottoField();
+      const numbers = new Set();
+      while (numbers.size < 6) {
+        numbers.add(Math.floor(Math.random() * 49) + 1);
+      }
+      const sorted = [...numbers].sort((a, b) => a - b);
+      sorted.forEach(num => {
+        const box = document.getElementById(`lotto-num-${num}`);
+        if (box) box.checked = true;
+      });
+      const superzahl = Math.floor(Math.random() * 10);
+      const superRadio = document.getElementById(`superzahl-${superzahl}`);
+      if (superRadio) superRadio.checked = true;
     });
-
     newLottoGameBtn.addEventListener("click", () => {
-        resetLottoField();
-        lottoResultDiv.textContent = "";
-        generateLottoBtn.style.display = "block";
-        checkLottoBtn.style.display = "block";
-        newLottoGameBtn.style.display = "none";
+      resetLottoField();
+      lottoResultDiv.textContent = "";
+      generateLottoBtn.style.display = "block";
+      checkLottoBtn.style.display = "block";
+      newLottoGameBtn.style.display = "none";
     });
-
     checkLottoBtn.addEventListener("click", () => {
-        const selectedNums = Array.from(document.querySelectorAll('input[name="lotto-num"]:checked')).map(i => Number(i.value));
-        const superzahlRadio = document.querySelector('input[name="superzahl"]:checked');
-        if (selectedNums.length !== 6) {
-            alert("Bitte wähle genau 6 Zahlen aus, um das Ergebnis zu prüfen.");
-            return;
+      const selectedNums = Array.from(document.querySelectorAll('input[name="lotto-num"]:checked')).map(i => Number(i.value));
+      const superzahlRadio = document.querySelector('input[name="superzahl"]:checked');
+      if (selectedNums.length !== 6) {
+        alert("Bitte wähle genau 6 Zahlen aus, um das Ergebnis zu prüfen.");
+        return;
+      }
+      if (!superzahlRadio) {
+        alert("Bitte wähle eine Superzahl aus.");
+        return;
+      }
+      const selectedSuperzahl = Number(superzahlRadio.value);
+      const winningNumbers = new Set();
+      while (winningNumbers.size < 6) {
+        winningNumbers.add(Math.floor(Math.random() * 49) + 1);
+      }
+      const winningSuperzahl = Math.floor(Math.random() * 10);
+      const sortedWinning = [...winningNumbers].sort((a, b) => a - b);
+      const selectedSet = new Set(selectedNums);
+      let correctCount = 0;
+      for (let i = 1; i <= 49; i++) {
+        const label = lottoPicker.querySelector(`label[for="lotto-num-${i}"]`);
+        const isSelected = selectedSet.has(i);
+        const isWinning = winningNumbers.has(i);
+        if (isSelected && isWinning) {
+          label.classList.add("correct");
+          correctCount++;
+        } else if (isSelected && !isWinning) {
+          label.classList.add("incorrect");
+        } else if (!isSelected && isWinning) {
+          label.classList.add("missing");
         }
-        if (!superzahlRadio) {
-            alert("Bitte wähle eine Superzahl aus.");
-            return;
+      }
+      document.querySelectorAll('#superzahl-picker label').forEach(label => {
+        const radioValue = Number(label.htmlFor.replace('superzahl-', ''));
+        const isSelected = radioValue === selectedSuperzahl;
+        const isWinning = radioValue === winningSuperzahl;
+        if (isSelected && isWinning) {
+          label.classList.add("correct");
+        } else if (isSelected && !isWinning) {
+          label.classList.add("incorrect");
+        } else if (!isSelected && isWinning) {
+          label.classList.add("missing");
         }
-        const selectedSuperzahl = Number(superzahlRadio.value);
-        const winningNumbers = new Set();
-        while (winningNumbers.size < 6) {
-            winningNumbers.add(Math.floor(Math.random() * 49) + 1);
-        }
-        const winningSuperzahl = Math.floor(Math.random() * 10);
-        const sortedWinning = [...winningNumbers].sort((a, b) => a - b);
-        const selectedSet = new Set(selectedNums);
-        let correctCount = 0;
-        for (let i = 1; i <= 49; i++) {
-            const label = lottoPicker.querySelector(`label[for="lotto-num-${i}"]`);
-            const isSelected = selectedSet.has(i);
-            const isWinning = winningNumbers.has(i);
-            if (isSelected && isWinning) {
-                label.classList.add("correct");
-                correctCount++;
-            } else if (isSelected && !isWinning) {
-                label.classList.add("incorrect");
-            } else if (!isSelected && isWinning) {
-                label.classList.add("missing");
-            }
-        }
-        document.querySelectorAll('#superzahl-picker label').forEach(label => {
-            const radioValue = Number(label.htmlFor.replace('superzahl-', ''));
-            const isSelected = radioValue === selectedSuperzahl;
-            const isWinning = radioValue === winningSuperzahl;
-            if (isSelected && isWinning) {
-                label.classList.add("correct");
-            } else if (isSelected && !isWinning) {
-                label.classList.add("incorrect");
-            } else if (!isSelected && isWinning) {
-                label.classList.add("missing");
-            }
-        });
-        const superzahlCorrect = selectedSuperzahl === winningSuperzahl;
-        const formattedWinning = sortedWinning.map(n => n < 10 ? "0" + n : n).join(", ");
-        lottoResultDiv.innerHTML = `Gezogene Zahlen: ${formattedWinning} | Superzahl: ${winningSuperzahl}<br>`;
-        lottoResultDiv.innerHTML += `Du hattest ${correctCount} richtige` + (superzahlCorrect ? " und die richtige Superzahl!" : ".");
-        generateLottoBtn.style.display = "none";
-        checkLottoBtn.style.display = "none";
-        newLottoGameBtn.style.display = "block";
-        document.querySelectorAll('#lotto-picker input, #superzahl-picker input').forEach(input => input.disabled = true);
+      });
+      const superzahlCorrect = selectedSuperzahl === winningSuperzahl;
+      const formattedWinning = sortedWinning.map(n => n < 10 ? "0" + n : n).join(", ");
+      lottoResultDiv.innerHTML = `Gezogene Zahlen: ${formattedWinning} | Superzahl: ${winningSuperzahl}<br>`;
+      lottoResultDiv.innerHTML += `Du hattest ${correctCount} richtige` + (superzahlCorrect ? " und die richtige Superzahl!" : ".");
+      generateLottoBtn.style.display = "none";
+      checkLottoBtn.style.display = "none";
+      newLottoGameBtn.style.display = "block";
+      newLottoGameBtn.style.background = "linear-gradient(135deg, #ff4081, #e040fb)";
+      newLottoGameBtn.hover.background = "linear-gradient(135deg, #e040fb, #ff4081)";
+      document.querySelectorAll('#lotto-picker input, #superzahl-picker input').forEach(input => input.disabled = true);
     });
 
     function resetLottoField() {
-        document.querySelectorAll("#lotto-picker label, #superzahl-picker label").forEach(label => {
-            label.classList.remove("correct", "incorrect", "missing");
-        });
-        document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => {
-            input.checked = false;
-            input.disabled = false;
-        });
+      document.querySelectorAll("#lotto-picker label, #superzahl-picker label").forEach(label => {
+        label.classList.remove("correct", "incorrect", "missing");
+      });
+      document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => {
+        input.checked = false;
+        input.disabled = false;
+      });
     }
+
+    // --- NEW BLACKJACK SCRIPT ---
+    const bjSuits = ['♠', '♥', '♦', '♣'];
+    const bjValues = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+
+    let bjDeck = [];
+    let dealerHand = [];
+    let playerHand = [];
+    let isGameOver = false;
+
+    const dealerHandEl = document.getElementById('dealer-hand');
+    const playerHandEl = document.getElementById('player-hand');
+    const dealerScoreEl = document.getElementById('dealer-score');
+    const playerScoreEl = document.getElementById('player-score');
+    const bjResultEl = document.getElementById('result');
+    const hitBtn = document.getElementById('hit-btn');
+    const standBtn = document.getElementById('stand-btn');
+    const restartBtn = document.getElementById('restart-btn');
+
+    function createDeck() {
+      bjDeck = [];
+      for (let suit of bjSuits) {
+        for (let value of bjValues) {
+          bjDeck.push({
+            suit,
+            value
+          });
+        }
+      }
+    }
+
+    function shuffleDeck() {
+      for (let i = bjDeck.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [bjDeck[i], bjDeck[j]] = [bjDeck[j], bjDeck[i]];
+      }
+    }
+
+    function cardValue(card) {
+      if (card.value === 'A') return 11;
+      if (['K', 'Q', 'J'].includes(card.value)) return 10;
+      return parseInt(card.value);
+    }
+
+    function calculateScore(hand) {
+      let score = 0;
+      let aceCount = 0;
+      for (let card of hand) {
+        score += cardValue(card);
+        if (card.value === 'A') aceCount++;
+      }
+      while (score > 21 && aceCount > 0) {
+        score -= 10;
+        aceCount--;
+      }
+      return score;
+    }
+
+    function renderHand(handEl, hand, hideSecondCard = false) {
+      handEl.innerHTML = '';
+      hand.forEach((card, idx) => {
+        const cardEl = document.createElement('div');
+        cardEl.className = 'card';
+        if (card.suit === '♥' || card.suit === '♦') cardEl.classList.add('red');
+
+        if (hideSecondCard && idx === 1) {
+          cardEl.classList.add('covered');
+          cardEl.innerHTML = '';
+        } else {
+          cardEl.innerHTML = `
+          <div class="corner top-left">${card.value}${card.suit}</div>
+          <div class="corner bottom-right">${card.value}${card.suit}</div>
+          <div class="symbol-center">${card.suit}</div>
+        `;
+        }
+        handEl.appendChild(cardEl);
+      });
+    }
+
+    function startGame() {
+      isGameOver = false;
+      bjResultEl.textContent = '';
+      restartBtn.style.display = 'none';
+      hitBtn.disabled = false;
+      standBtn.disabled = false;
+
+      createDeck();
+      shuffleDeck();
+
+      dealerHand = [bjDeck.pop(), bjDeck.pop()];
+      playerHand = [bjDeck.pop(), bjDeck.pop()];
+
+      renderHand(dealerHandEl, dealerHand, true);
+      renderHand(playerHandEl, playerHand);
+
+      if (!checkForEnd()) {
+        updateScores(true);
+      }
+    }
+
+    function updateScores(hideDealerSecondCard = false) {
+      let dealerScore = 0;
+      if (hideDealerSecondCard) {
+        dealerScore = cardValue(dealerHand[0]);
+      } else {
+        dealerScore = calculateScore(dealerHand);
+      }
+      let playerScore = calculateScore(playerHand);
+      dealerScoreEl.textContent = 'Punkte: ' + dealerScore;
+      playerScoreEl.textContent = 'Punkte: ' + playerScore;
+
+      return {
+        dealerScore,
+        playerScore
+      };
+    }
+
+    function checkForEnd() {
+      let {
+        playerScore
+      } = updateScores();
+      if (playerScore > 21) {
+        endGame('Du hast überkauft! Dealer gewinnt.');
+        return true;
+      }
+      if (playerScore === 21 && playerHand.length === 2) {
+        // Player has blackjack, check if dealer also has it
+        dealerTurn(); // Reveal dealer's hand to check for push
+        return true;
+      }
+      return false;
+    }
+
+
+    function dealerTurn() {
+        hitBtn.disabled = true;
+        standBtn.disabled = true;
+
+        renderHand(dealerHandEl, dealerHand, false); // Reveal dealer's second card
+        updateScores(false);
+
+        // Check for immediate end conditions (like player blackjack)
+        const playerScore = calculateScore(playerHand);
+        const dealerScore = calculateScore(dealerHand);
+        if (playerScore === 21 && playerHand.length === 2 && dealerScore !== 21) {
+            endGame('Blackjack! Du gewinnst!');
+            return;
+        }
+        if (playerScore === dealerScore && playerScore === 21) {
+             endGame('Unentschieden! (Push)');
+             return;
+        }
+
+        function dealerDraw() {
+            let currentDealerScore = calculateScore(dealerHand);
+            if (currentDealerScore < 17) {
+                dealerHand.push(bjDeck.pop());
+                renderHand(dealerHandEl, dealerHand);
+                updateScores(false);
+                setTimeout(dealerDraw, 1000);
+            } else {
+                finalizeGame();
+            }
+        }
+        setTimeout(dealerDraw, 1000);
+    }
+
+    function finalizeGame() {
+      const dealerScore = calculateScore(dealerHand);
+      const playerScore = calculateScore(playerHand);
+
+      if (dealerScore > 21 || playerScore > dealerScore) {
+        endGame('Du gewinnst!');
+      } else if (playerScore < dealerScore) {
+        endGame('Dealer gewinnt!');
+      } else {
+        endGame('Unentschieden! (Push)');
+      }
+    }
+
+    function endGame(message) {
+      isGameOver = true;
+      bjResultEl.textContent = message;
+      hitBtn.disabled = true;
+      standBtn.disabled = true;
+      restartBtn.style.display = 'block';
+      renderHand(dealerHandEl, dealerHand, false); // Always show dealer's full hand at the end
+      updateScores(false);
+    }
+
+    hitBtn.addEventListener('click', () => {
+      if (isGameOver) return;
+      playerHand.push(bjDeck.pop());
+      renderHand(playerHandEl, playerHand);
+      if (!checkForEnd()) {
+        updateScores(true);
+      }
+    });
+
+    standBtn.addEventListener('click', () => {
+      if (isGameOver) return;
+      dealerTurn();
+    });
+
+    restartBtn.addEventListener('click', () => {
+      startGame();
+    });
+
+    // --- INITIAL PAGE LOAD ---
     window.scrollTo(0, 0);
-</script>
+  </script>
 </body>
 
 </html>
