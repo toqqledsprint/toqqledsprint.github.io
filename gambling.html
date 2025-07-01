@@ -315,26 +315,62 @@
       margin: 1rem 0;
       width: 100%;
       max-width: 320px;
-    }
-
-    .reel {
-      width: 80px;
-      height: 80px;
-      background: #111;
-      border: 4px solid #00bcd4;
-      border-radius: 12px;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       position: relative;
     }
 
+    /* NEW: The overlay for the winning line */
+.slot-machine {
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem 0;
+    width: 100%;
+    max-width: 320px;
+    position: relative; /* Wichtig für die Positionierung des Overlays */
+}
+
+.reel {
+    width: 80px;
+    height: 240px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 4px solid #00bcd4;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative; /* Jede Walze ist nun ein eigener Anker */
+}
+
+/* NEU: Der präzise, zentrierte Rahmen für JEDE Walze */
+.reel::after {
+    content: '';
+    position: absolute;
+    top: 80px; /* Bleibt gleich, positioniert es vertikal korrekt */
+    height: 80px; /* Bleibt gleich, Höhe eines Symbols */
+
+    /* NEU: Positionierung bis an die Außenkante */
+    left: -4px;  /* Geht 4px nach links (Breite des türkisen Rahmens) */
+    right: -4px; /* Geht 4px nach rechts */
+
+    /* NEU: Nur horizontale Linien, damit sie perfekt anschließen */
+    border-top: 3px solid #ffc107;
+    border-bottom: 3px solid #ffc107;
+    
+    /* Der Glanz-Effekt bleibt erhalten */
+    box-shadow: 0 0 12px rgba(255, 193, 7, 0.6);
+
+    pointer-events: none;
+}
+
+    .reel-strip {
+      transition: transform 4s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
     .symbol {
-      position: absolute;
       font-size: 2.5rem;
-      opacity: 0;
-      transition: opacity 0.1s;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
     }
 
     #spinBtn {
@@ -350,7 +386,12 @@
       transition: background 0.3s;
     }
 
-    #spinBtn:hover {
+    #spinBtn:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
+
+    #spinBtn:hover:not(:disabled) {
       background: linear-gradient(135deg, #2196f3, #9c27b0);
       box-shadow: 0 0 25px #9c27b0;
     }
@@ -436,7 +477,8 @@
     #superzahl-picker input[type="radio"]:checked+label {
       background: radial-gradient(circle, #ff0077);
       box-shadow: 0 0 15px #ff0077;
-      border-color: #ff0077;;
+      border-color: #ff0077;
+      ;
       color: #000;
       font-weight: 900;
     }
@@ -446,7 +488,8 @@
       background: #4caf50 !important;
       color: #fff !important;
       box-shadow: 0 0 10px #4caf50 !important;
-      border-color: #388e3c !important;;
+      border-color: #388e3c !important;
+      ;
     }
 
     #lotto-picker label.incorrect,
@@ -454,7 +497,8 @@
       background: #f44336 !important;
       color: #fff !important;
       box-shadow: 0 0 10px #f44336 !important;
-      border-color: #d32f2f !important;;
+      border-color: #d32f2f !important;
+      ;
     }
 
     #lotto-picker label.missing,
@@ -462,7 +506,8 @@
       background: #555 !important;
       color: #fff !important;
       box-shadow: 0 0 10px #444 !important;
-      border-color: #444 !important;;
+      border-color: #444 !important;
+      ;
     }
 
     .sr-only {
@@ -536,15 +581,10 @@
 
     <section id="slot" class="game" aria-label="Slot Machine Spiel">
       <div class="slot-machine">
-        <div class="reel">
-          <div class="symbol" id="sym0">🍒</div>
-        </div>
-        <div class="reel">
-          <div class="symbol" id="sym1">🍋</div>
-        </div>
-        <div class="reel">
-          <div class="symbol" id="sym2">🔔</div>
-        </div>
+        <div class="reel" id="reel0"></div>
+        <div class="reel" id="reel1"></div>
+        <div class="reel" id="reel2"></div>
+        <div class="slot-overlay"></div> <!-- The new winning line frame -->
       </div>
       <button id="spinBtn">Spin</button>
       <div class="result" id="resultText"></div>
@@ -590,7 +630,11 @@
     const games = document.querySelectorAll(".game");
     select.addEventListener("change", () => {
       games.forEach(game => game.classList.remove("active"));
-      document.getElementById(select.value).classList.add("active");
+      const selectedGame = document.getElementById(select.value);
+      selectedGame.classList.add("active");
+      if (select.value === 'slot') {
+        setupReels();
+      }
     });
 
     const canvas = document.getElementById("wheelCanvas");
@@ -754,40 +798,110 @@
         isCoinFlipping = false;
       }, 1500);
     }
-    const symbols = ["🍒", "🍋", "🔔", "🍉", "⭐", "7️⃣"];
-    const reels = [document.getElementById("sym0"), document.getElementById("sym1"), document.getElementById("sym2")];
-    const resultText = document.getElementById("resultText");
-    const spinBtn = document.getElementById("spinBtn");
 
-    function spinReel(reelEl, delay) {
-      return new Promise(resolve => {
-        let cycles = 20 + Math.floor(Math.random() * 20);
-        let count = 0;
-        const interval = setInterval(() => {
-          reelEl.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-          reelEl.style.opacity = 1;
-          count++;
-          if (count >= cycles) {
-            clearInterval(interval);
-            resolve(reelEl.textContent);
-          }
-        }, delay);
+    // --- NEW SLOT MACHINE SCRIPT ---
+    const slotSymbols = ["🍒", "🍋", "🔔", "🍉", "⭐", "7️⃣"];
+    const slotResultText = document.getElementById("resultText");
+    const spinSlotBtn = document.getElementById("spinBtn");
+    const symbolHeight = 80;
+    const reelElements = [document.getElementById('reel0'), document.getElementById('reel1'), document.getElementById('reel2')];
+    let isSlotSpinning = false;
+
+    function shuffle(array) {
+      let currentIndex = array.length,
+        randomIndex;
+      while (currentIndex != 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+      }
+      return array;
+    }
+
+    function setupReels() {
+      reelElements.forEach(reel => {
+        reel.innerHTML = ''; // Clear previous content
+        const strip = document.createElement('div');
+        strip.classList.add('reel-strip');
+        const baseSymbols = shuffle([...slotSymbols]);
+        // Create a very long strip for seamless looping (5 repetitions)
+        const stripSymbols = [...baseSymbols, ...baseSymbols, ...baseSymbols, ...baseSymbols, ...baseSymbols];
+        stripSymbols.forEach(symbol => {
+          const symbolEl = document.createElement('div');
+          symbolEl.classList.add('symbol');
+          symbolEl.textContent = symbol;
+          strip.appendChild(symbolEl);
+        });
+        reel.appendChild(strip);
       });
     }
-    spinBtn.addEventListener("click", async () => {
-      spinBtn.disabled = true;
-      resultText.textContent = "";
-      const results = await Promise.all([spinReel(reels[0], 50), spinReel(reels[1], 70), spinReel(reels[2], 90)]);
-      if (results[0] === results[1] && results[1] === results[2]) {
-        resultText.textContent = `🎉 Jackpot!`;
-      } else if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) {
-        resultText.textContent = `Zweifach-Kombi!`;
-      } else {
-        resultText.textContent = `Probier's einfach nochmal!`;
-      }
-      spinBtn.disabled = false;
-    });
 
+    async function spinSlot() {
+      if (isSlotSpinning) return;
+      isSlotSpinning = true;
+      spinSlotBtn.disabled = true;
+      slotResultText.textContent = "";
+
+      const results = [];
+      const promises = [];
+
+      for (let i = 0; i < reelElements.length; i++) {
+        const reel = reelElements[i];
+        const strip = reel.querySelector('.reel-strip');
+        
+        // Choose a random target symbol
+        const targetSymbol = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+        results.push(targetSymbol);
+        
+        // Find the index of the target symbol in the 4th repetition block
+        // This ensures we have enough runway for the animation
+        let targetIndex = -1;
+        const stripChildren = Array.from(strip.children);
+        for(let j = slotSymbols.length * 3; j < slotSymbols.length * 4; j++){
+            if(stripChildren[j].textContent === targetSymbol){
+                targetIndex = j;
+                break;
+            }
+        }
+        
+        // The final position is offset by one symbolHeight to center it in the 240px tall view
+        const finalPosition = targetIndex * symbolHeight - symbolHeight;
+
+        const promise = new Promise(resolve => {
+          strip.style.transition = `transform ${4 + i * 0.5}s cubic-bezier(0.25, 1, 0.5, 1)`;
+          strip.style.transform = `translateY(-${finalPosition}px)`;
+
+          strip.addEventListener('transitionend', () => {
+            strip.style.transition = 'none';
+            // Reset to the equivalent symbol in the 2nd repetition block to avoid running out of strip
+            const resetIndex = targetIndex - (slotSymbols.length * 2);
+            const resetPosition = resetIndex * symbolHeight - symbolHeight;
+            strip.style.transform = `translateY(-${resetPosition}px)`;
+            resolve();
+          }, { once: true });
+        });
+        promises.push(promise);
+      }
+
+      await Promise.all(promises);
+
+      if (results[0] === results[1] && results[1] === results[2]) {
+        slotResultText.textContent = `🎉 Jackpot!`;
+      } else if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) {
+        slotResultText.textContent = `Zweifach-Kombi!`;
+      } else {
+        slotResultText.textContent = `Probier's einfach nochmal!`;
+      }
+
+      isSlotSpinning = false;
+      spinSlotBtn.disabled = false;
+    }
+
+    spinSlotBtn.addEventListener("click", spinSlot);
+    setupReels(); // Initial setup
+
+
+    // --- LOTTO SCRIPT ---
     const lottoPicker = document.getElementById("lotto-picker");
     const superzahlPicker = document.getElementById("superzahl-picker");
     const generateLottoBtn = document.getElementById("generateLottoBtn");
