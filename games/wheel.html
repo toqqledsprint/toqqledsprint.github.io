@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Glücksrad</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+    <link rel="icon" type="image/vnd.microsoft.icon" href="../img/favicon.ico">
+</head>
+<body>
+    <div class="starfield" id="starfield"></div>
+    <div class="page-layout">
+        <aside class="sidebar">
+            <h1><a href="games.html">Spiele</a></h1>
+            <nav class="game-nav" aria-label="Spieleauswahl">
+                <ul>
+                    <li><a href="wheel.html" class="game-nav-btn">🎡 Glücksrad</a></li>
+                    <li><a href="randomgenerator.html" class="game-nav-btn">🎲 Zufallszahl</a></li>
+                    <li><a href="headsortails.html" class="game-nav-btn">🪙 Kopf oder Zahl</a></li>
+                    <li><a href="slotmachine.html" class="game-nav-btn">🎰 Slotmaschine</a></li>
+                    <li><a href="lotto.html" class="game-nav-btn">🎯 Lotto</a></li>
+                    <li><a href="blackjack.html" class="game-nav-btn">🃏 Blackjack</a></li>
+                    <li><a href="guesstheflag.html" class="game-nav-btn">🌍 Errate die Flagge</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content" role="main">
+            <div class="game-container">
+                <section id="wheel" class="game">
+                    <div class="wheel-container">
+                        <div class="pointer"></div>
+                        <canvas id="wheelCanvas"></canvas>
+                    </div>
+                    <div id="wheel-entries"></div>
+                    <div style="display: flex; gap: 1rem; width:100%;">
+                        <button type="button" onclick="addWheelEntry()">➕ Hinzufügen</button>
+                        <button type="button" onclick="spinWheel()">🎡 Drehen</button>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- Universal Page Script ---
+        const starfield = document.getElementById('starfield');
+        const starCount = 120;
+        for (let i = 0; i < starCount; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            const size = Math.random() * 3 + 1 + 'px';
+            star.style.width = size;
+            star.style.height = size;
+            star.style.top = Math.random() * 100 + '%';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.animationDelay = (Math.random() * 4) + 's';
+            starfield.appendChild(star);
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPage = window.location.pathname.split('/').pop();
+            document.querySelector(`.game-nav-btn[href="${currentPage}"]`)?.classList.add('active');
+            
+            // --- Glücksrad Initialisierung ---
+            addWheelEntry("Eintrag 1");
+            addWheelEntry("Eintrag 2");
+            drawWheel();
+        });
+
+        // --- Glücksrad Script ---
+        const wheelCanvas = document.getElementById("wheelCanvas");
+        const ctx = wheelCanvas.getContext("2d");
+        let wheelSectors = [];
+        let isWheelSpinning = false;
+        let currentWheelRotation = 0;
+        const wheelColors = ["#ff1744", "#ff9100", "#ffc400", "#00e676", "#00b0ff", "#651fff", "#00bcd4", "#d500f9"];
+
+        function drawWheel() {
+            const inputs = document.querySelectorAll("#wheel-entries input");
+            wheelSectors = Array.from(inputs).map(i => i.value.trim()).filter(Boolean);
+            const size = wheelCanvas.clientWidth;
+            if (size === 0) return;
+            wheelCanvas.width = size;
+            wheelCanvas.height = size;
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const radius = Math.max(size / 2 - 6, 10);
+            const textRadius = radius * 0.65;
+            const arc = 2 * Math.PI / (wheelSectors.length || 1);
+            ctx.clearRect(0, 0, size, size);
+            wheelSectors.forEach((label, i) => {
+                const angle = i * arc;
+                ctx.fillStyle = wheelColors[i % wheelColors.length];
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, angle, angle + arc);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                ctx.save();
+                ctx.fillStyle = "#fff";
+                ctx.translate(centerX, centerY);
+                const textAngle = angle + arc / 2;
+                ctx.rotate(textAngle);
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.font = `bold ${size / 22.5}px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif`;
+                if (textAngle >= Math.PI / 2 && textAngle < 1.5 * Math.PI) {
+                    ctx.rotate(Math.PI);
+                    ctx.fillText(label, -textRadius, 0);
+                } else {
+                    ctx.fillText(label, textRadius, 0);
+                }
+                ctx.restore();
+            });
+        }
+
+        function spinWheel() {
+            if (isWheelSpinning) return;
+            drawWheel();
+            if (wheelSectors.length < 2) { alert("Bitte füge mindestens zwei Einträge hinzu."); return; }
+            isWheelSpinning = true;
+            const additionalRotation = (Math.random() * 360) + (5 * 360);
+            currentWheelRotation += additionalRotation;
+            wheelCanvas.style.transform = `rotate(${currentWheelRotation}deg)`;
+            wheelCanvas.addEventListener('transitionend', onSpinEnd, { once: true });
+        }
+
+        function onSpinEnd() {
+            isWheelSpinning = false;
+            const finalRotation = currentWheelRotation % 360;
+            const pointerPosition = 270;
+            let winningAngle = (pointerPosition - finalRotation + 360) % 360;
+            const sectorAngle = 360 / wheelSectors.length;
+            const winningIndex = Math.floor(winningAngle / sectorAngle);
+            setTimeout(() => {
+                if (wheelSectors[winningIndex] !== undefined) {
+                    alert(`"${wheelSectors[winningIndex]}" hat gewonnen!`);
+                }
+            }, 100);
+        }
+
+        function addWheelEntry(value = "") {
+            const container = document.getElementById("wheel-entries");
+            const entry = document.createElement("div");
+            entry.className = "wheel-entry";
+            const input = document.createElement("input");
+            input.type = "text"; input.placeholder = "Neuer Eintrag"; input.value = value;
+            entry.appendChild(input);
+            const removeBtn = document.createElement("button");
+            removeBtn.type = "button"; removeBtn.textContent = "×";
+            removeBtn.onclick = () => {
+                if (container.children.length > 2) {
+                    container.removeChild(entry);
+                    drawWheel();
+                } else {
+                    alert("Das Glücksrad muss mindestens zwei Einträge haben.");
+                }
+            };
+            entry.appendChild(removeBtn);
+            input.addEventListener("input", drawWheel);
+            container.appendChild(entry);
+            if (value === "") input.focus();
+            drawWheel();
+        }
+        window.addEventListener('resize', drawWheel);
+    </script>
+</body>
+</html>

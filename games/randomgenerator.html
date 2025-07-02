@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Zufallsgenerator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+    <link rel="icon" type="image/vnd.microsoft.icon" href="../img/favicon.ico">
+</head>
+<body>
+    <div class="starfield" id="starfield"></div>
+    <div class="page-layout">
+        <aside class="sidebar">
+            <h1><a href="games.html">Spiele</a></h1>
+            <nav class="game-nav" aria-label="Spieleauswahl">
+                <ul>
+                    <li><a href="wheel.html" class="game-nav-btn">🎡 Glücksrad</a></li>
+                    <li><a href="randomgenerator.html" class="game-nav-btn">🎲 Zufallszahl</a></li>
+                    <li><a href="headsortails.html" class="game-nav-btn">🪙 Kopf oder Zahl</a></li>
+                    <li><a href="slotmachine.html" class="game-nav-btn">🎰 Slotmaschine</a></li>
+                    <li><a href="lotto.html" class="game-nav-btn">🎯 Lotto</a></li>
+                    <li><a href="blackjack.html" class="game-nav-btn">🃏 Blackjack</a></li>
+                    <li><a href="guesstheflag.html" class="game-nav-btn">🌍 Errate die Flagge</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content" role="main">
+            <div class="game-container">
+                <section id="random" class="game">
+                    <div id="random-inputs">
+                        <input type="number" id="min" placeholder="Min" />
+                        <input type="number" id="max" placeholder="Max" />
+                    </div>
+                    <button type="button" onclick="generateRandom()">Generieren</button>
+                    <div id="random-result"></div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- Universal Page Script ---
+        const starfield = document.getElementById('starfield');
+        const starCount = 120;
+        for (let i = 0; i < starCount; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            const size = Math.random() * 3 + 1 + 'px';
+            star.style.width = size;
+            star.style.height = size;
+            star.style.top = Math.random() * 100 + '%';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.animationDelay = (Math.random() * 4) + 's';
+            starfield.appendChild(star);
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPage = window.location.pathname.split('/').pop();
+            document.querySelector(`.game-nav-btn[href="${currentPage}"]`)?.classList.add('active');
+        });
+
+        // --- Zufallsgenerator Script ---
+        function generateRandom() {
+            const min = parseInt(document.getElementById("min").value, 10);
+            const max = parseInt(document.getElementById("max").value, 10);
+            if (isNaN(min) || isNaN(max)) { alert("Bitte gib gültige Zahlen ein."); return; }
+            if (min > max) { alert("Die 'Min'-Zahl darf nicht größer als die 'Max'-Zahl sein."); return; }
+            const result = Math.floor(Math.random() * (max - min + 1)) + min;
+            document.getElementById("random-result").textContent = result;
+        }
+    </script>
+</body>
+</html>
