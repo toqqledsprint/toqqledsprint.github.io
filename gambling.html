@@ -95,9 +95,7 @@
     }
 
     .sidebar {
-      background: var(--surface-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: #16213e;
       border-right: 1px solid var(--surface-border);
       padding: 2rem 1rem;
       display: flex;
@@ -161,9 +159,8 @@
     .game-container {
       width: 100%;
       max-width: 700px;
-      background: var(--surface-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: #16213e;
+      /* Solid fallback background */
       border: 1px solid var(--surface-border);
       padding: 2.5rem;
       border-radius: var(--border-radius);
@@ -171,6 +168,22 @@
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+
+    /* Apply blur effect only if supported */
+    @supports (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px)) {
+
+      .sidebar,
+      .game-container {
+        background: var(--surface-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      input,
+      button {
+        background-color: rgba(0, 0, 0, 0.2);
+      }
     }
 
     /* 
@@ -182,7 +195,8 @@
     button {
       font-family: inherit;
       border: 1px solid var(--surface-border);
-      background-color: rgba(0, 0, 0, 0.2);
+      background-color: #0e1525;
+      /* Solid fallback background */
       color: var(--color-text);
       border-radius: 10px;
       padding: 1rem;
@@ -339,7 +353,7 @@
       height: 180px;
       position: relative;
       transform: translateY(55px);
-        }
+    }
 
     .coin {
       width: 100%;
