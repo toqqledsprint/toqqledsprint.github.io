@@ -32,6 +32,7 @@ CORE & LAYOUT STYLES
   box-sizing: border-box;
 }
 
+
 html {
   scroll-behavior: smooth;
 }
@@ -63,6 +64,18 @@ body {
   border-radius: 50%;
   animation: twinkle 4s infinite ease-in-out;
   opacity: 0.3;
+}
+
+/* Chrome, Safari, Edge */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }
 
 @keyframes twinkle {
@@ -236,6 +249,16 @@ button:disabled {
   width: 100%;
 }
 
+.btn-restart-style {
+  background: linear-gradient(135deg, #ff4081, #e040fb);
+  box-shadow: 0 0 18px #e040fb;
+}
+
+.btn-restart-style:hover:not(:disabled) {
+  background: linear-gradient(135deg, #e040fb, #ff4081);
+  box-shadow: 0 0 25px #ff4081;
+}
+
 /* 
 ========================================
 SPECIFIC GAME STYLES
@@ -338,10 +361,6 @@ SPECIFIC GAME STYLES
   box-shadow: none;
 }
 
-#flag #restart-button {
-  width: 200px;
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-}
 
 #flag .difficult-button {
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
@@ -801,15 +820,6 @@ SPECIFIC GAME STYLES
   line-height: 1.5;
 }
 
-.btn-lotto-style {
-  background: linear-gradient(135deg, #ff4081, #e040fb);
-  box-shadow: 0 0 18px #e040fb;
-}
-
-.btn-lotto-style:hover:not(:disabled) {
-  background: linear-gradient(135deg, #e040fb, #ff4081);
-  box-shadow: 0 0 25px #ff4081;
-}
 
 /* --- Blackjack --- */
 #blackjack h2 {
@@ -910,9 +920,6 @@ SPECIFIC GAME STYLES
   margin: 0;
 }
 
-#blackjack #restart-btn {
-  margin-top: 1.5rem;
-}
 
 #blackjack #result {
   text-align: center;
@@ -920,6 +927,65 @@ SPECIFIC GAME STYLES
   font-weight: 800;
   color: var(--accent-gold);
   min-height: 2.5rem;
+}
+
+/* --- Guess the number --- */
+
+#guess-the-number {
+  text-align: center;
+  max-width: 450px;
+}
+
+#guess-the-number h2 {
+  font-size: 2rem;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 0.5rem;
+}
+
+#guess-the-number p {
+  color: var(--color-text-dim);
+  font-size: 1.1rem;
+}
+
+#guess-the-number .input-group {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  align-items: center;
+}
+
+#guess-the-number #guessInput {
+  flex-grow: 1;
+  text-align: center;
+}
+
+#guess-the-number #guessBtn {
+  flex-shrink: 0;
+  margin-top: 0;
+  width: auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+#guess-the-number #feedback {
+  margin-top: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  min-height: 2em;
+  line-height: 1.5;
+  transition: color var(--transition-speed);
+}
+
+#guess-the-number #feedback.success { color: var(--accent-green); }
+#guess-the-number #feedback.error { color: var(--accent-red); }
+#guess-the-number #feedback.hint { color: var(--accent-primary); }
+
+#guess-the-number #attempts {
+  color: var(--color-text-dim);
+  font-size: 1rem;
+  min-height: 1.2rem;
 }
 
 /* 
@@ -1040,4 +1106,43 @@ MOBILE ADAPTATION
     height: 100px;
     font-size: 1.5rem;
   }
+
+  @media (max-width: 900px) {
+  .page-layout {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--surface-border);
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+  .sidebar h1 { font-size: 2rem; }
+  .game-nav ul {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .game-nav-btn {
+    width: auto;
+    flex-grow: 1;
+    justify-content: center;
+    padding: 0.7rem 1rem;
+    font-size: 1rem;
+  }
+  .main-content {
+    padding: 1.5rem 1rem;
+    align-items: flex-start;
+  }
+  .game-container { padding: 1.5rem; }
+}
+ @media (max-width: 600px) {
+    #guess-the-number .input-group {
+        flex-direction: column;
+    }
+    #guess-the-number #guessBtn {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+ }
 }

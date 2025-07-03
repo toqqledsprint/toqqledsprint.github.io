@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,6 +9,7 @@
     <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
     <link rel="icon" type="image/vnd.microsoft.icon" href="../img/favicon.ico">
 </head>
+
 <body>
     <div class="starfield" id="starfield"></div>
     <div class="page-layout">
@@ -22,6 +24,7 @@
                     <li><a href="lotto.html" class="game-nav-btn">🎯 Lotto</a></li>
                     <li><a href="blackjack.html" class="game-nav-btn">🃏 Blackjack</a></li>
                     <li><a href="guesstheflag.html" class="game-nav-btn">🌍 Errate die Flagge</a></li>
+                    <li><a href="guessthenumber.html" class="game-nav-btn">🔢 Errate die Zahl</a></li>
                 </ul>
             </nav>
         </aside>
@@ -57,7 +60,7 @@
                         <div class="logo">🏆</div>
                         <h1>Spiel beendet</h1>
                         <p id="resultsArea" style="font-size: 1.5rem; color: var(--color-text);">Ergebnis: 0/0</p>
-                        <button class="btn" id="restart-button">Neustart</button>
+                        <button id="restart-button" class="btn-restart-style" style="display:none;">Neues Spiel</button>
                     </div>
                 </section>
             </div>
@@ -83,7 +86,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const currentPage = window.location.pathname.split('/').pop();
             document.querySelector(`.game-nav-btn[href="${currentPage}"]`)?.classList.add('active');
-            
+
             // --- Flaggenspiel Initialisierung ---
             setupFlagGame();
             flag_loadCountries();
@@ -107,7 +110,7 @@
             }
             return newArr;
         }
-        
+
         function setupFlagGame() {
             flagGameSection.querySelector("#easy").addEventListener("click", () => flag_startGame('easy'));
             flagGameSection.querySelector("#medium").addEventListener("click", () => flag_startGame('medium'));
@@ -118,7 +121,7 @@
                 flagButtons[i].addEventListener("click", flag_selectedFlag);
             }
         }
-        
+
         async function flag_loadCountries() {
             if (flagAllCountries.length > 0) return;
             try {
@@ -133,7 +136,7 @@
                 flagGameSection.querySelector(".start-container p").innerText = "Bitte Internetverbindung prüfen.";
             }
         }
-        
+
         function flag_startGame(difficulty) {
             if (flagAllCountries.length === 0) {
                 const p = flagGameSection.querySelector(".start-container p");
@@ -154,7 +157,7 @@
             flag_updateScoreLabel();
             flag_drawFlag();
         }
-        
+
         function flag_setupGameParameters(difficulty) {
             if (difficulty === "easy") { flagTotalRounds = 10; }
             else if (difficulty === "medium") { flagTotalRounds = 15; }
@@ -162,17 +165,17 @@
             flagScore = 0;
             flagWronged = 0;
         }
-        
+
         function flag_updateScoreLabel() {
             const scoreLabel = flagGameSection.querySelector("#score-label");
             const currentRound = flagScore + flagWronged + 1;
             scoreLabel.innerHTML = `Punkte: ${flagScore} | Runde: ${Math.min(currentRound, flagTotalRounds)}/${flagTotalRounds}`;
         }
-        
+
         function flag_getRandomCountries() {
             flagGameCountries = shuffle([...flagAllCountries]).slice(0, flagTotalRounds);
         }
-        
+
         function flag_drawFlag() {
             const index = flagScore + flagWronged;
             if (index >= flagGameCountries.length) {
@@ -192,30 +195,34 @@
                 }
             }
 
-            shuffle(options);
-            flagGameSection.querySelector("#flag-image").src = correctCountry.flags.png;
+            const shuffledOptions = shuffle(options);
             const flagButtons = flagGameSection.getElementsByClassName("flag-button");
             for (let i = 0; i < flagButtons.length; i++) {
-                flagButtons[i].innerHTML = options[i].translations.deu.common;
-                if (options[i].cca2 === correctCountry.cca2) {
-                    flagCorrectButtonID = i + 1;
-                }
+                flagButtons[i].innerHTML = shuffledOptions[i].translations.deu.common;
+                flagButtons[i].dataset.countryCode = shuffledOptions[i].cca2; // Neue Zeile: Button bekommt das Land als Attribut
             }
+
+            flagGameSection.querySelector("#flag-image").src = correctCountry.flags.png;
+            flagGameSection.dataset.correctCountry = correctCountry.cca2; // Neue Zeile: Das richtige Land speichern
         }
-        
+
         function flag_selectedFlag(e) {
+            const selectedCode = e.target.dataset.countryCode;
+            const correctCode = flagGameSection.dataset.correctCountry;
             const flagButtons = flagGameSection.querySelectorAll('.flag-button');
+
             flagButtons.forEach(btn => btn.disabled = true);
 
-            const selectedButtonID = parseInt(e.target.id);
-            const correctButton = flagGameSection.querySelector(`#\\${CSS.escape(flagCorrectButtonID.toString())}`);
-
-            if (selectedButtonID === flagCorrectButtonID) {
+            if (selectedCode === correctCode) {
                 e.target.style.backgroundColor = 'var(--accent-green)';
                 flagScore++;
             } else {
                 e.target.style.backgroundColor = 'var(--accent-red)';
-                if (correctButton) correctButton.style.backgroundColor = 'var(--accent-green)';
+                flagButtons.forEach(btn => {
+                    if (btn.dataset.countryCode === correctCode) {
+                        btn.style.backgroundColor = 'var(--accent-green)';
+                    }
+                });
                 flagWronged++;
             }
 
@@ -233,14 +240,18 @@
                 }
             }, 1200);
         }
-        
+
+
         function flag_gameOver() {
             flagGameSection.querySelector(".game-container.panel").classList.remove('active');
             flagGameSection.querySelector(".result-container").classList.add('active');
             const resultsArea = flagGameSection.querySelector("#resultsArea");
             resultsArea.innerHTML = `Ergebnis: ${flagScore} von ${flagTotalRounds} richtig!`;
+
+            flagGameSection.querySelector("#restart-button").style.display = "block";
         }
-        
+
+
         function resetFlagGame() {
             flagScore = 0;
             flagWronged = 0;
@@ -251,4 +262,5 @@
         }
     </script>
 </body>
+
 </html>
