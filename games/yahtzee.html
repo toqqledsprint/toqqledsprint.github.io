@@ -189,7 +189,6 @@
             });
         }
         
-        // --- NEW: Function to load persistent names ---
         function loadPlayerNames() {
             const savedNames = JSON.parse(localStorage.getItem('kniffelPlayerNames'));
             if (savedNames) {
@@ -199,7 +198,6 @@
             player2NameEl.textContent = playerNames[2];
         }
 
-        // --- NEW: Function to save persistent names ---
         function savePlayerNames() {
             localStorage.setItem('kniffelPlayerNames', JSON.stringify(playerNames));
         }
@@ -215,7 +213,6 @@
         function startNewGame(isInitialStart = false) {
             gameStarted = true; currentPlayer = 1; turnsPlayed = 0; scores = { 1: {}, 2: {} };
             
-            // On a new game, we use the already loaded (or default) persistent names
             playerNames = { 1: player1NameEl.textContent, 2: player2NameEl.textContent };
             
             resetScoreboardData(); startTurn(); gameOverOverlay.style.display = 'none';
@@ -291,7 +288,7 @@
             else if (total2 > total1) message += `${playerNames[2]} gewinnt!`;
             else message += "Unentschieden!";
             winnerMessage.innerHTML = message; gameOverOverlay.style.display = 'flex';
-            localStorage.removeItem('kniffelGameState');
+            localStorage.removeItem('kniffelGameState'); // CORRECT: Remove save state on game end
         }
 
         function showNotification(message, type = 'error') {
@@ -382,12 +379,12 @@
                 element.contentEditable = false; const newName = element.textContent.trim();
                 if (newName) {
                     playerNames[playerNumber] = newName;
-                    savePlayerNames(); // --- NEW: Save persistent names on change ---
+                    savePlayerNames();
                 } else {
                     element.textContent = playerNames[playerNumber];
                 }
                 if (gameStarted && currentPlayer === playerNumber) { currentPlayerDisplay.textContent = `${playerNames[currentPlayer]} ist dran`; }
-                saveGame(); // Save game state which includes current names for the session
+                if (gameStarted) saveGame();
             });
             element.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); element.blur(); } });
         }
@@ -420,12 +417,14 @@
         
         // Event Listeners
         rollButton.addEventListener('click', handleRollClick);
-        restartButton.addEventListener('click', () => newGameConfirmModal.style.display = 'flex');
+        restartButton.addEventListener('click', () => {
+            newGameConfirmModal.style.display = 'flex';
+        });
         newGameButton.addEventListener('click', () => {
             if (gameStarted) {
                 newGameConfirmModal.style.display = 'flex';
             } else {
-                startNewGame();
+                startNewGame(true);
             }
         });
         
@@ -452,7 +451,7 @@
         
         // Initial setup
         buildScoreboard();
-        loadPlayerNames(); // --- NEW: Load persistent names on start ---
+        loadPlayerNames();
         initGame();
     });
     </script>
