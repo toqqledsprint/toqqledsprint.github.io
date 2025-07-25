@@ -23,6 +23,7 @@
                     <li><a href="blackjack.html" class="game-nav-btn">🃏 Blackjack</a></li>
                     <li><a href="guesstheflag.html" class="game-nav-btn">🌍 Errate die Flagge</a></li>
                     <li><a href="guessthenumber.html" class="game-nav-btn">🔢 Errate die Zahl</a></li>
+                    <li><a href="yahtzee.html" class="game-nav-btn">🎲 Kniffel</a></li>                               
                 </ul>
             </nav>
         </aside>
@@ -39,11 +40,12 @@
                         <div class="hand" id="player-hand"></div>
                         <div class="score" id="player-score">Punkte: 0</div>
                     </section>
+                    <!-- *** HTML-ÄNDERUNG HIER *** -->
                     <div id="buttons">
                         <button id="hit-btn">Ziehen</button>
                         <button id="stand-btn">Halten</button>
+                        <button id="restart-btn" class="btn-restart-style" style="display:none;">Neues Spiel</button>
                     </div>
-                    <button id="restart-btn" class="btn-restart-style" style="display:none;">Neues Spiel</button>
                     <div id="result"></div>
                 </section>
             </div>
@@ -150,15 +152,24 @@
         function startGame() {
             isGameOver = false;
             bjResultEl.textContent = '';
+            
+            // *** JS-ÄNDERUNG HIER ***
+            // Zeige Spiel-Buttons, verstecke Neustart-Button
+            hitBtn.style.display = 'inline-block';
+            standBtn.style.display = 'inline-block';
             restartBtn.style.display = 'none';
+
             hitBtn.disabled = false;
             standBtn.disabled = false;
+            
             createDeck();
             shuffleDeck();
             dealerHand = [bjDeck.pop(), bjDeck.pop()];
             playerHand = [bjDeck.pop(), bjDeck.pop()];
+            
             renderHand(dealerHandEl, dealerHand, true);
             renderHand(playerHandEl, playerHand);
+            
             if (!checkForEnd()) {
                 updateScores(true);
             }
@@ -236,9 +247,13 @@
         function endGame(message) {
             isGameOver = true;
             bjResultEl.textContent = message;
-            hitBtn.disabled = true;
-            standBtn.disabled = true;
-            restartBtn.style.display = 'block';
+
+            // *** JS-ÄNDERUNG HIER ***
+            // Verstecke Spiel-Buttons, zeige Neustart-Button
+            hitBtn.style.display = 'none';
+            standBtn.style.display = 'none';
+            restartBtn.style.display = 'inline-block'; // Oder 'block'
+
             renderHand(dealerHandEl, dealerHand, false);
             updateScores(false);
         }

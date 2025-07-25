@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+  <link rel="icon" type="image/vnd.microsoft.icon" href="img/favicon.ico">
+  <title>Gambling</title>
+  <style>
+    /* 
+    ========================================
+    CORE & LAYOUT STYLES
+    ========================================
+    */
+    :root {
+      --font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
+      --color-background-start: #0a0a0a;
+      --color-background-mid: #1a1a2e;
+      --color-background-end: #16213e;
+      --color-text: #e0e0e0;
+      --color-text-dim: #a0a0b0;
+      --color-white: #ffffff;
+      --accent-primary: #00bcd4;
+      --accent-secondary: #2196f3;
+      --accent-tertiary: #9c27b0;
+      --accent-pink: #ff4081;
+      --accent-gold: #ffc107;
+      --accent-green: #4caf50;
+      --accent-red: #ff5252;
+      --surface-bg: rgba(22, 33, 62, 0.4);
+      --surface-border: rgba(255, 255, 255, 0.1);
+      --surface-hover: rgba(255, 255, 255, 0.05);
+      --border-radius: 16px;
+      --sidebar-width: 260px;
+      --transition-speed: 0.3s;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--color-background-start);
+      color: var(--color-text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--color-background-start) 0%, var(--color-background-mid) 50%, var(--color-background-end) 100%);
+    }
+
+    .star {
+      position: absolute;
+      background: var(--color-white);
+      border-radius: 50%;
+      animation: twinkle 4s infinite ease-in-out;
+      opacity: 0.3;
+    }
+
+    @keyframes twinkle {
+
+      0%,
+      100% {
+        opacity: 0.3;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+    }
+
+    .page-layout {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      background: #16213e;
+      border-right: 1px solid var(--surface-border);
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .sidebar h1 {
+      font-size: 2.5rem;
+      text-align: center;
+      background: linear-gradient(135deg, #64ffda 0%, var(--accent-primary) 50%, var(--accent-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      user-select: none;
+      padding: 0 1rem;
+    }
+
+    .game-nav ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .game-nav-btn {
+      width: 100%;
+      padding: 0.8rem 1.2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--color-text-dim);
+      background: transparent;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: background var(--transition-speed) ease, color var(--transition-speed) ease;
+    }
+
+    .game-nav-btn:hover {
+      background: var(--surface-hover);
+      color: var(--color-white);
+    }
+
+    .game-nav-btn.active {
+      background: var(--accent-secondary);
+      color: var(--color-white);
+      box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+    }
+
+    .main-content {
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .game-container {
+      width: 100%;
+      max-width: 700px;
+      background: #16213e;
+      border: 1px solid var(--surface-border);
+      padding: 2.5rem;
+      border-radius: var(--border-radius);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    @supports (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px)) {
+
+      .sidebar,
+      .game-container {
+        background: var(--surface-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      input,
+      button {
+        background-color: rgba(0, 0, 0, 0.2);
+      }
+    }
+
+    /* 
+    ========================================
+    GENERAL COMPONENT STYLES
+    ========================================
+    */
+    input,
+    button {
+      font-family: inherit;
+      border: 1px solid var(--surface-border);
+      background-color: #0e1525;
+      color: var(--color-text);
+      border-radius: 10px;
+      padding: 1rem;
+      font-size: 1.1rem;
+      width: 100%;
+      transition: all var(--transition-speed) ease;
+    }
+
+    input::placeholder {
+      color: var(--color-text-dim);
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--accent-secondary);
+      box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.4);
+    }
+
+    button {
+      font-weight: bold;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border: none;
+      margin-top: 1rem;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(33, 150, 243, 0.4);
+    }
+
+    button:disabled {
+      background: #555;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .game {
+      display: flex;
+      /* Die Spiele sind jetzt immer sichtbar auf ihrer Seite */
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      width: 100%;
+    }
+
+    /* 
+    ========================================
+    SPECIFIC GAME STYLES
+    ========================================
+    */
+    /* --- Flag Game --- */
+    #flag .panel {
+      width: 100%;
+      background: transparent;
+      border: none;
+      padding: 0;
+      box-shadow: none;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    #flag .panel.active {
+      display: flex;
+    }
+
+    #flag .panel h1 {
+      text-align: center;
+      font-size: 2rem;
+      color: var(--color-text);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+    }
+
+    #flag .logo {
+      font-size: 60px;
+    }
+
+    #flag .panel p {
+      color: var(--color-text-dim);
+      font-size: 1.1rem;
+      text-align: center;
+    }
+
+    #flag .info-container {
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      justify-content: space-around;
+      font-size: 1.2rem;
+      color: var(--accent-gold);
+      font-weight: 700;
+      text-align: center;
+    }
+
+    #flag .flag-container {
+      min-height: 214px;
+    }
+
+    #flag #flag-image {
+      width: 100%;
+      max-width: 320px;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      border: 3px solid var(--surface-border);
+    }
+
+    #flag .buttons-container {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    #flag .flag-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    #flag .btn {
+      font-family: inherit;
+      border: 1px solid var(--surface-border);
+      background-color: rgba(0, 0, 0, 0.2);
+      color: var(--color-text);
+      border-radius: 10px;
+      padding: 1rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all var(--transition-speed) ease;
+      margin-top: 0;
+    }
+
+    #flag .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      background-color: var(--surface-hover);
+      border-color: var(--accent-secondary);
+      box-shadow: none;
+    }
+
+    #flag #restart-button {
+      width: 200px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    }
+
+    #flag .difficult-button {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    }
+
+    /* --- Wheel of Fortune --- */
+    .wheel-container {
+      position: relative;
+      width: 90vw;
+      max-width: 450px;
+      aspect-ratio: 1 / 1;
+      user-select: none;
+    }
+
+    #wheelCanvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 12px solid rgba(0, 0, 0, 0.4);
+      box-shadow: 0 0 20px var(--accent-primary);
+      background: transparent;
+      transition: transform 5s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .pointer {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-top: 40px solid var(--accent-pink);
+      filter: drop-shadow(0 0 4px var(--accent-pink));
+      z-index: 10;
+    }
+
+    #wheel-entries {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .wheel-entry {
+      display: flex;
+      gap: 0.5rem;
+      width: 100%;
+    }
+
+    .wheel-entry input {
+      flex: 1;
+      padding: 0.8rem;
+      font-size: 1rem;
+    }
+
+    .wheel-entry button {
+      flex-shrink: 0;
+      width: 48px;
+      font-size: 1.2rem;
+      background: var(--accent-red);
+      border-radius: 10px;
+      color: var(--color-white);
+      border: none;
+      cursor: pointer;
+      user-select: none;
+      margin-top: 0;
+    }
+
+    #wheel button {
+      margin-top: 0.5rem;
+    }
+
+    /* --- Random Number --- */
+    #random-inputs {
+      display: flex;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    #random-result {
+      font-size: 4rem;
+      font-weight: 700;
+      color: #64ffda;
+      text-align: center;
+      min-height: 4.5rem;
+    }
+
+    /* --- Coin Flip --- */
+    .coin-container {
+      perspective: 1000px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 180px;
+    }
+
+    .coin-wrapper {
+      width: 180px;
+      height: 180px;
+      position: relative;
+      transform: translateY(55px);
+    }
+
+    .coin {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transform: rotateX(-15deg) rotateY(0deg);
+      transition: transform 0.2s ease-out;
+    }
+
+    .coin.flipping {
+      animation: flip-toss 2.5s ease-out forwards;
+      transition: none;
+    }
+
+    .coin .side,
+    .coin .edge {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      backface-visibility: hidden;
+    }
+
+    .coin .side img {
+      width: 100%;
+      height: 100%;
+    }
+
+    .coin .head {
+      transform: translateZ(8px);
+    }
+
+    .coin .tail {
+      transform: rotateY(180deg) translateZ(8px);
+    }
+
+    .coin .edge {
+      background: repeating-linear-gradient(90deg,
+          #bbb, #ddd, #bbb 2px);
+    }
+
+    .coin-shadow {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      width: 120px;
+      height: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 50%;
+      filter: blur(5px);
+      transform: translateX(-50%) scale(1);
+    }
+
+    .coin-wrapper:hover .coin:not(.flipping) {
+      transform: rotateX(-15deg) rotateY(0deg) scale(1.05);
+    }
+
+    .coin.flipping+.coin-shadow {
+      animation: shadow-toss 2.5s ease-out forwards;
+    }
+
+    @keyframes shadow-toss {
+
+      0%,
+      100% {
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: translateX(-50%) scale(0.6);
+        opacity: 0.5;
+      }
+    }
+
+    @keyframes flip-toss {
+      0% {
+        transform: rotateX(-15deg) translateY(0) rotateY(var(--start-rot));
+      }
+
+      15% {
+        transform: rotateX(60deg) translateY(-200px) rotateY(var(--start-rot));
+      }
+
+      80% {
+        transform: rotateX(60deg) translateY(-200px) rotateY(var(--final-rot));
+      }
+
+      100% {
+        transform: rotateX(-15deg) translateY(0) rotateY(var(--final-rot));
+      }
+    }
+
+    #coin-result {
+      margin-top: 1rem;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--accent-gold);
+      min-height: 2rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* --- Slot Machine --- */
+    #slot {
+      background: linear-gradient(145deg, #c81d25, #9c171d);
+      border-radius: 40px;
+      padding: 2rem 1.5rem 1.5rem 1.5rem;
+      width: 100%;
+      max-width: 450px;
+      border: 8px solid #333;
+      box-shadow:
+        inset 0 0 15px rgba(0, 0, 0, 0.7),
+        0 0 0 5px #c0c0c0,
+        0 0 0 10px #333,
+        10px 10px 30px rgba(0, 0, 0, 0.5);
+      position: relative;
+      gap: 1.5rem;
+      margin-top: 30px;
+    }
+
+    #slot::before {
+      content: 'SLOTGAMES';
+      position: absolute;
+      top: -45px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, #ffeb3b, #fbc02d);
+      color: #8c1616;
+      font-family: 'Impact', Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      font-size: 2rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      padding: 0.5rem 2rem;
+      border-radius: 20px 20px 0 0;
+      border: 4px solid #333;
+      border-bottom: none;
+      text-shadow: 1px 1px 1px #fff;
+      width: 80%;
+      text-align: center;
+      box-shadow: 0 -5px 15px rgba(255, 193, 7, 0.5);
+    }
+
+    .slot-machine {
+      display: flex;
+      gap: 15px;
+      width: 100%;
+      max-width: none;
+      background: #111;
+      padding: 20px 15px;
+      border-radius: 15px;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.9);
+      border: 4px solid #444;
+    }
+
+    .reel {
+      width: calc(33.333% - 10px);
+      height: 240px;
+      background-color: #f0f0f0;
+      border: 2px solid #777;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      box-shadow:
+        inset 0 6px 10px rgba(0, 0, 0, 0.2),
+        inset 0 -6px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .reel::after {
+      content: '';
+      position: absolute;
+      top: 80px;
+      height: 80px;
+      left: -15px;
+      right: -15px;
+      border-top: 4px dashed var(--accent-gold);
+      border-bottom: 4px dashed var(--accent-gold);
+      box-shadow: 0 0 15px 5px rgba(255, 193, 7, 0.7);
+      pointer-events: none;
+      z-index: 5;
+      background: linear-gradient(to right,
+          transparent,
+          rgba(255, 215, 0, 0.15) 20%,
+          rgba(255, 215, 0, 0.15) 80%,
+          transparent);
+    }
+
+    .reel .symbol {
+      font-size: 3rem;
+      width: 100%;
+      height: 80px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      color: #333;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    #spinBtn {
+      width: 120px;
+      height: 120px;
+      margin: 1rem auto 0 auto;
+      font-size: 2rem;
+      font-family: 'Impact', Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      color: white;
+      background: radial-gradient(circle at 50% 40%, #ff4b4b, #d90429 80%);
+      border-radius: 50%;
+      border: 5px solid #fff;
+      border-bottom-color: #aaa;
+      border-left-color: #ddd;
+      border-right-color: #ddd;
+      text-shadow: -2px -2px 0 #800000, 2px -2px 0 #800000, -2px 2px 0 #800000, 2px 2px 0 #800000, 0 0 15px black;
+      box-shadow: 0 10px 0 #800000, 0 15px 25px rgba(0, 0, 0, 0.6);
+      cursor: pointer;
+      transition: all 0.1s ease-out;
+    }
+
+    #spinBtn:hover:not(:disabled) {
+      background: radial-gradient(circle at 50% 45%, #ff6b6b, #e02449 80%);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 0 #800000, 0 17px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    #spinBtn:active:not(:disabled) {
+      transform: translateY(5px);
+      box-shadow: 0 5px 0 #800000, 0 8px 15px rgba(0, 0, 0, 0.6);
+    }
+
+    #spinBtn:disabled {
+      background: #666;
+      border-color: #888;
+      color: #444;
+      text-shadow: none;
+      box-shadow: 0 5px 0 #333;
+      cursor: not-allowed;
+      opacity: 1;
+    }
+
+    #slot .result {
+      width: 100%;
+      background: #1a1a1a;
+      border: 3px inset #333;
+      border-radius: 8px;
+      padding: 0.5rem;
+      margin-top: 0;
+      font-size: 1.8rem;
+      font-family: 'Courier New', Courier, monospace;
+      min-height: 3.5rem;
+      color: var(--accent-gold);
+      text-shadow: 0 0 8px var(--accent-gold), 0 0 10px var(--accent-pink);
+      text-align: center;
+      line-height: 1.2;
+      box-shadow: inset 0 0 10px #000;
+    }
+
+    /* --- Lotto --- */
+    #lotto-picker {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+
+    #lotto-picker label {
+      width: 100%;
+      aspect-ratio: 1/1;
+      min-width: 42px;
+      background: radial-gradient(circle, #ffeb3b, #fbc02d);
+      color: #222;
+      font-weight: bold;
+      font-size: 1.2rem;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      border: 2px solid transparent;
+      transition: all var(--transition-speed);
+    }
+
+    #lotto-picker input[type="checkbox"] {
+      display: none;
+    }
+
+    #lotto-picker input[type="checkbox"]:checked+label {
+      background: radial-gradient(circle, var(--accent-pink));
+      border-color: var(--accent-pink);
+      color: #000;
+    }
+
+    #superzahl-picker {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    #superzahl-picker label {
+      width: 48px;
+      height: 48px;
+      background: radial-gradient(circle, #ffeb3b, #fbc02d);
+      color: #222;
+      font-weight: bold;
+      font-size: 1.4rem;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      border: 2px solid transparent;
+      transition: all 0.3s;
+    }
+
+    #superzahl-picker input[type="radio"] {
+      display: none;
+    }
+
+    #superzahl-picker input[type="radio"]:checked+label {
+      background: radial-gradient(circle, var(--accent-pink));
+      border-color: var(--accent-pink);
+      color: #000;
+    }
+
+    #lotto-picker label.correct,
+    #superzahl-picker label.correct {
+      background: var(--accent-green) !important;
+      color: var(--color-white) !important;
+    }
+
+    #lotto-picker label.incorrect,
+    #superzahl-picker label.incorrect {
+      background: var(--accent-red) !important;
+      color: var(--color-white) !important;
+    }
+
+    #lotto-picker label.missing,
+    #superzahl-picker label.missing {
+      background: #555 !important;
+      color: var(--color-white) !important;
+    }
+
+    #lotto-result {
+      color: var(--accent-gold);
+      font-weight: 700;
+      font-size: 1.2rem;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .btn-lotto-style {
+      background: linear-gradient(135deg, #ff4081, #e040fb);
+      box-shadow: 0 0 18px #e040fb;
+    }
+
+    .btn-lotto-style:hover:not(:disabled) {
+      background: linear-gradient(135deg, #e040fb, #ff4081);
+      box-shadow: 0 0 25px #ff4081;
+    }
+
+    /* --- Blackjack --- */
+    #blackjack h2 {
+      text-align: center;
+      font-size: 1.2rem;
+      color: var(--color-text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+
+    #blackjack .hand {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 0.5rem;
+      min-height: 140px;
+      justify-content: center;
+      margin-bottom: 0.5rem;
+      width: 100%;
+    }
+
+    #blackjack .score {
+      font-size: 1.3rem;
+      color: var(--accent-gold);
+      font-weight: 700;
+      text-align: center;
+    }
+
+    #blackjack .card {
+      background: var(--color-white);
+      border-radius: 12px;
+      width: 90px;
+      height: 130px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+      color: #000;
+      position: relative;
+      user-select: none;
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    #blackjack .card.red {
+      color: #d22345;
+    }
+
+    #blackjack .card-content {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #blackjack .corner {
+      position: absolute;
+      font-size: 1.5rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    #blackjack .corner.top-left {
+      top: 8px;
+      left: 10px;
+    }
+
+    #blackjack .corner.bottom-right {
+      bottom: 8px;
+      right: 10px;
+      transform: rotate(180deg);
+    }
+
+    #blackjack .symbol-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      font-size: 4rem;
+      line-height: 1;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    #blackjack .card.covered {
+      background: linear-gradient(135deg, #111, #222);
+      box-shadow: 0 4px 10px rgba(255, 64, 129, 0.8);
+    }
+
+    #blackjack #buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    #blackjack #buttons button {
+      flex: 1;
+      width: auto;
+      margin: 0;
+    }
+
+    #blackjack #restart-btn {
+      margin-top: 1.5rem;
+    }
+
+    #blackjack #result {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--accent-gold);
+      min-height: 2.5rem;
+    }
+
+    /* 
+    ========================================
+    MOBILE ADAPTATION
+    ========================================
+    */
+    @media (max-width: 900px) {
+      .page-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        border-right: none;
+        border-bottom: 1px solid var(--surface-border);
+        padding: 1rem;
+        gap: 1.5rem;
+      }
+
+      .sidebar h1 {
+        font-size: 2rem;
+      }
+
+      .game-nav ul {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .game-nav-btn {
+        width: auto;
+        flex-grow: 1;
+        justify-content: center;
+        padding: 0.7rem 1rem;
+        font-size: 1rem;
+      }
+
+      .main-content {
+        padding: 1.5rem 1rem;
+        align-items: flex-start;
+      }
+
+      .game-container {
+        padding: 1.5rem;
+      }
+
+      #flag .buttons-container {
+        flex-direction: column;
+      }
+
+      #flag .flag-options {
+        grid-template-columns: 1fr;
+      }
+
+      #flag .panel h1 {
+        font-size: 1.5rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+
+      #blackjack #buttons,
+      #random-inputs {
+        flex-direction: column;
+      }
+
+      #lotto-picker {
+        gap: 6px;
+      }
+
+      #lotto-picker label {
+        min-width: unset;
+        font-size: 1rem;
+      }
+
+      #superzahl-picker label {
+        width: 44px;
+        height: 44px;
+        font-size: 1.3rem;
+      }
+
+      .game-container {
+        padding: 1rem;
+      }
+    }
+
+    @media (max-width: 400px) {
+      #blackjack .card {
+        width: 70px;
+        height: 100px;
+      }
+
+      #blackjack .symbol-center {
+        font-size: 3rem;
+      }
+
+      #blackjack .corner {
+        font-size: 1.1rem;
+      }
+
+      #slot::before {
+        font-size: 1.5rem;
+        padding: 0.25rem 1rem;
+        top: -35px;
+      }
+
+      #slot {
+        padding: 1rem;
+      }
+
+      .reel .symbol {
+        font-size: 2.5rem;
+      }
+
+      #spinBtn {
+        width: 100px;
+        height: 100px;
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="starfield" id="starfield"></div>
+  <div class="page-layout">
+    <aside class="sidebar">
+      <h1>Gambling</h1>
+      <nav class="game-nav" aria-label="Spieleauswahl">
+        <ul>
+          <li><button class="game-nav-btn" data-game="wheel">🎡 Glücksrad</button></li>
+          <li><button class="game-nav-btn" data-game="random">🎲 Zufallszahl</button></li>
+          <li><button class="game-nav-btn" data-game="coin">🪙 Kopf oder Zahl</button></li>
+          <li><button class="game-nav-btn" data-game="slot">🎰 Slotmaschine</button></li>
+          <li><button class="game-nav-btn" data-game="lotto">🎯 Lotto</button></li>
+          <li><button class="game-nav-btn" data-game="blackjack">🃏 Blackjack</button></li>
+          <li><button class="game-nav-btn" data-game="flag">🌍 Errate die Flagge</button></li>
+        </ul>
+      </nav>
+    </aside>
+    <main class="main-content" role="main">
+      <div class="game-container">
+        <section id="wheel" class="game">
+          <div class="wheel-container">
+            <div class="pointer"></div>
+            <canvas id="wheelCanvas"></canvas>
+          </div>
+          <div id="wheel-entries"></div>
+          <div style="display: flex; gap: 1rem; width:100%;">
+            <button type="button" onclick="addWheelEntry()">➕ Hinzufügen</button>
+            <button type="button" onclick="spinWheel()">🎡 Drehen</button>
+          </div>
+        </section>
+        <section id="random" class="game">
+          <div id="random-inputs">
+            <input type="number" id="min" placeholder="Min" />
+            <input type="number" id="max" placeholder="Max" />
+          </div>
+          <button type="button" onclick="generateRandom()">Generieren</button>
+          <div id="random-result"></div>
+        </section>
+        <section id="coin" class="game">
+          <div class="coin-container">
+            <div class="coin-wrapper">
+              <div class="coin" id="coinElement">
+              </div>
+              <div class="coin-shadow"></div>
+            </div>
+          </div>
+          <div id="coin-result"></div>
+          <button type="button" onclick="flipCoin()" id="flipCoinBtn">🪙 Werfen</button>
+        </section>
+        <section id="slot" class="game">
+          <div class="slot-machine">
+            <div class="reel" id="reel0"></div>
+            <div class="reel" id="reel1"></div>
+            <div class="reel" id="reel2"></div>
+          </div>
+          <div class="result" id="resultText"></div>
+          <button id="spinBtn">SPIN</button>
+        </section>
+        <section id="lotto" class="game">
+          <div id="lotto-picker" role="group"></div>
+          <p style="text-align:center; color:var(--accent-green); font-weight:bold; user-select:none;">Superzahl</p>
+          <div id="superzahl-picker" role="radiogroup"></div>
+          <button id="generateLottoBtn">Zufallszahlen</button>
+          <button id="checkLottoBtn"
+            style="background: linear-gradient(135deg, var(--accent-secondary),var(--accent-tertiary));">Ergebnis
+            prüfen</button>
+          <button id="newLottoGameBtn" class="btn-lotto-style" style="display: none;">Neues Spiel</button>
+          <div id="lotto-result"></div>
+        </section>
+        <section id="blackjack" class="game">
+          <section id="dealer-section">
+            <h2>Dealer</h2>
+            <div class="hand" id="dealer-hand"></div>
+            <div class="score" id="dealer-score">Punkte: 0</div>
+          </section>
+          <section id="player-section">
+            <h2>Du</h2>
+            <div class="hand" id="player-hand"></div>
+            <div class="score" id="player-score">Punkte: 0</div>
+          </section>
+          <div id="buttons">
+            <button id="hit-btn">Ziehen</button>
+            <button id="stand-btn">Halten</button>
+          </div>
+          <button id="restart-btn" class="btn-lotto-style" style="display:none;">Neues Spiel</button>
+          <div id="result"></div>
+        </section>
+        <section id="flag" class="game">
+          <div class="panel start-container active">
+            <div class="logo">🌍</div>
+            <h1>Errate die Flagge</h1>
+            <p>Wähle eine Schwierigkeit, um eine Runde<br>mit fester Flaggenanzahl zu starten.</p>
+            <div class="buttons-container">
+              <button class="btn difficult-button" id="easy">Einfach (10)</button>
+              <button class="btn difficult-button" id="medium">Mittel (15)</button>
+              <button class="btn difficult-button" id="hard">Schwer (20)</button>
+            </div>
+          </div>
+          <div class="panel game-container">
+            <div class="info-container">
+              <p id="score-label">Punkte: 0 | Runde: 0/0</p>
+            </div>
+            <h1>Welche Flagge ist das?</h1>
+            <div class="flag-container">
+              <img src="" id="flag-image" alt="Flagge">
+            </div>
+            <div class="flag-options">
+              <button class="btn flag-button" id="1">Land 1</button>
+              <button class="btn flag-button" id="2">Land 2</button>
+              <button class="btn flag-button" id="3">Land 3</button>
+              <button class="btn flag-button" id="4">Land 4</button>
+            </div>
+          </div>
+          <div class="panel result-container">
+            <div class="logo">🏆</div>
+            <h1>Spiel beendet</h1>
+            <p id="resultsArea" style="font-size: 1.5rem; color: var(--color-text);">Ergebnis: 0/0</p>
+            <button class="btn" id="restart-button">Neustart</button>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script>
+    const starfield = document.getElementById('starfield');
+    const games = document.querySelectorAll(".game");
+    const navButtons = document.querySelectorAll(".game-nav-btn");
+    const starCount = 120;
+    for (let i = 0; i < starCount; i++) {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      const size = Math.random() * 3 + 1 + 'px';
+      star.style.width = size;
+      star.style.height = size;
+      star.style.top = Math.random() * 100 + '%';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.animationDelay = (Math.random() * 4) + 's';
+      starfield.appendChild(star);
+    }
+    function activateGame(gameId) {
+      games.forEach(game => game.classList.remove("active"));
+      navButtons.forEach(btn => btn.classList.remove("active"));
+      const selectedGame = document.getElementById(gameId);
+      const selectedButton = document.querySelector(`.game-nav-btn[data-game="${gameId}"]`);
+      if (selectedGame && selectedButton) {
+        selectedGame.classList.add("active");
+        selectedButton.classList.add("active");
+      }
+      if (gameId === 'wheel') drawWheel();
+      if (gameId === 'slot') setupReels();
+      if (gameId === 'lotto') resetLottoField();
+      if (gameId === 'blackjack') startGame();
+      if (gameId === 'flag') resetFlagGame();
+    }
+    navButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const newGameId = button.dataset.game;
+        localStorage.setItem('lastActiveGame', newGameId);
+        activateGame(newGameId);
+      });
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+      addWheelEntry("Eintrag 1");
+      addWheelEntry("Eintrag 2");
+      createLottoBoard();
+      setup3DCoin();
+      setupFlagGame();
+      flag_loadCountries();
+      const lastGame = localStorage.getItem('lastActiveGame') || 'wheel';
+      activateGame(lastGame);
+    });
+    const wheelCanvas = document.getElementById("wheelCanvas");
+    const ctx = wheelCanvas.getContext("2d");
+    let wheelSectors = [];
+    let isWheelSpinning = false;
+    let currentWheelRotation = 0;
+    const wheelColors = ["#ff1744", "#ff9100", "#ffc400", "#00e676", "#00b0ff", "#651fff", "#00bcd4", "#d500f9"];
+    function drawWheel() {
+      const inputs = document.querySelectorAll("#wheel-entries input");
+      wheelSectors = Array.from(inputs).map(i => i.value.trim()).filter(Boolean);
+      const size = wheelCanvas.clientWidth;
+      if (size === 0) return;
+      wheelCanvas.width = size;
+      wheelCanvas.height = size;
+      const centerX = size / 2;
+      const centerY = size / 2;
+      const radius = Math.max(size / 2 - 6, 10);
+      const textRadius = radius * 0.65;
+      const arc = 2 * Math.PI / (wheelSectors.length || 1);
+      ctx.clearRect(0, 0, size, size);
+      wheelSectors.forEach((label, i) => {
+        const angle = i * arc;
+        ctx.fillStyle = wheelColors[i % wheelColors.length];
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, angle, angle + arc);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.save();
+        ctx.fillStyle = "#fff";
+        ctx.translate(centerX, centerY);
+        const textAngle = angle + arc / 2;
+        ctx.rotate(textAngle);
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = `bold ${size / 22.5}px 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif`;
+        if (textAngle >= Math.PI / 2 && textAngle < 1.5 * Math.PI) {
+          ctx.rotate(Math.PI);
+          ctx.fillText(label, -textRadius, 0);
+        } else {
+          ctx.fillText(label, textRadius, 0);
+        }
+        ctx.restore();
+      });
+    }
+    function spinWheel() {
+      if (isWheelSpinning) return;
+      drawWheel();
+      if (wheelSectors.length < 2) { alert("Bitte füge mindestens zwei Einträge hinzu."); return; }
+      isWheelSpinning = true;
+      const additionalRotation = (Math.random() * 360) + (5 * 360);
+      currentWheelRotation += additionalRotation;
+      wheelCanvas.style.transform = `rotate(${currentWheelRotation}deg)`;
+      wheelCanvas.addEventListener('transitionend', onSpinEnd, { once: true });
+    }
+    function onSpinEnd() {
+      isWheelSpinning = false;
+      const finalRotation = currentWheelRotation % 360;
+      const pointerPosition = 270;
+      let winningAngle = (pointerPosition - finalRotation + 360) % 360;
+      const sectorAngle = 360 / wheelSectors.length;
+      const winningIndex = Math.floor(winningAngle / sectorAngle);
+      setTimeout(() => {
+        if (wheelSectors[winningIndex] !== undefined) {
+          alert(`"${wheelSectors[winningIndex]}" hat gewonnen!`);
+        }
+      }, 100);
+    }
+    function addWheelEntry(value = "") {
+      const container = document.getElementById("wheel-entries");
+      const entry = document.createElement("div");
+      entry.className = "wheel-entry";
+      const input = document.createElement("input");
+      input.type = "text"; input.placeholder = "Neuer Eintrag"; input.value = value;
+      entry.appendChild(input);
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button"; removeBtn.textContent = "×";
+      removeBtn.onclick = () => {
+        if (container.children.length > 2) {
+          container.removeChild(entry);
+          drawWheel();
+        } else {
+          alert("Das Glücksrad muss mindestens zwei Einträge haben.");
+        }
+      };
+      entry.appendChild(removeBtn);
+      input.addEventListener("input", drawWheel);
+      container.appendChild(entry);
+      if (value === "") input.focus();
+      drawWheel();
+    }
+    window.addEventListener('resize', drawWheel);
+    function generateRandom() {
+      const min = parseInt(document.getElementById("min").value, 10);
+      const max = parseInt(document.getElementById("max").value, 10);
+      if (isNaN(min) || isNaN(max)) { alert("Bitte gib gültige Zahlen ein."); return; }
+      if (min > max) { alert("Die 'Min'-Zahl darf nicht größer als die 'Max'-Zahl sein."); return; }
+      const result = Math.floor(Math.random() * (max - min + 1)) + min;
+      document.getElementById("random-result").textContent = result;
+    }
+    let coinRotation = 0;
+    let isCoinFlipping = false;
+    const coin = document.getElementById("coinElement");
+    const flipCoinBtn = document.getElementById("flipCoinBtn");
+    const coinResultDiv = document.getElementById("coin-result");
+    const COIN_THICKNESS = 16;
+    function setup3DCoin() {
+      coin.innerHTML = '';
+      const head = document.createElement('div');
+      head.classList.add('side', 'head');
+      head.innerHTML = `<img src="img/games/kopf.png" alt="Kopf" />`;
+      coin.appendChild(head);
+      for (let i = 0; i < COIN_THICKNESS; i++) {
+        const edge = document.createElement('div');
+        edge.classList.add('edge');
+        edge.style.transform = `translateZ(${(i - COIN_THICKNESS / 2) + 0.5}px)`;
+        coin.appendChild(edge);
+      }
+      const tail = document.createElement('div');
+      tail.classList.add('side', 'tail');
+      tail.innerHTML = `<img src="img/games/zahl.png" alt="Zahl" />`;
+      coin.appendChild(tail);
+    }
+    function flipCoin() {
+      if (isCoinFlipping) return;
+      isCoinFlipping = true;
+      flipCoinBtn.disabled = true;
+      coinResultDiv.textContent = "";
+      const isKopf = Math.random() < 0.5;
+      const randomSpins = Math.floor(Math.random() * 4) + 6;
+      const finalRotationValue = coinRotation + (randomSpins * 360) + (isKopf ? 0 : 180);
+      coin.style.setProperty('--start-rot', coinRotation + 'deg');
+      coin.style.setProperty('--final-rot', finalRotationValue + 'deg');
+      coin.style.transform = '';
+      coin.classList.add('flipping');
+      coin.addEventListener('animationend', () => {
+        coin.classList.remove('flipping');
+        coinRotation = finalRotationValue;
+        coin.style.transform = `rotateX(-15deg) rotateY(${coinRotation}deg)`;
+        coinResultDiv.textContent = isKopf ? "Kopf" : "Zahl";
+        isCoinFlipping = false;
+        flipCoinBtn.disabled = false;
+      }, { once: true });
+    }
+    const slotSymbols = ["🍒", "🍋", "🔔", "🍉", "⭐", "7️⃣", "💎"];
+    const slotResultText = document.getElementById("resultText");
+    const spinSlotBtn = document.getElementById("spinBtn");
+    const reelElements = [document.getElementById('reel0'), document.getElementById('reel1'), document.getElementById('reel2')];
+    let isSlotSpinning = false;
+    setupReels();
+    function shuffle(array) {
+      let newArr = [...array];
+      for (let i = newArr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+      }
+      return newArr;
+    }
+    function setupReels() {
+      reelElements.forEach(reel => {
+        reel.innerHTML = '';
+        const strip = document.createElement('div');
+        strip.classList.add('reel-strip');
+        const baseSymbols = shuffle(slotSymbols);
+        const stripSymbols = [];
+        for (let i = 0; i < 15; i++) {
+          stripSymbols.push(...baseSymbols);
+        }
+        stripSymbols.forEach(symbol => {
+          const symbolEl = document.createElement('div');
+          symbolEl.classList.add('symbol');
+          symbolEl.textContent = symbol;
+          strip.appendChild(symbolEl);
+        });
+        strip.style.transition = 'none';
+        const symbolHeight = 80;
+        const startPosition = (baseSymbols.length * 2) * symbolHeight - symbolHeight;
+        strip.style.transform = `translateY(-${startPosition}px)`;
+        reel.appendChild(strip);
+      });
+    }
+    spinSlotBtn.addEventListener("click", async () => {
+      if (isSlotSpinning) return;
+      isSlotSpinning = true;
+      spinSlotBtn.disabled = true;
+      slotResultText.textContent = "Rollen lassen...";
+      const results = [];
+      const symbolHeight = 80;
+      const oneRotationHeight = slotSymbols.length * symbolHeight;
+      const promises = reelElements.map((reel, i) => {
+        const strip = reel.firstElementChild;
+        const stripChildren = Array.from(strip.children);
+        const targetSymbol = slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+        results.push(targetSymbol);
+        let targetIndex = stripChildren.findIndex((el, idx) =>
+          idx >= slotSymbols.length * 3 && el.textContent === targetSymbol
+        );
+        const finalPosition = targetIndex * symbolHeight - symbolHeight;
+        const extraRotations = 5 + Math.floor(Math.random() * 5);
+        const totalSpinDistance = finalPosition + (extraRotations * oneRotationHeight);
+        const spinDuration = (6 + Math.random() * 4 + i * 0.7).toFixed(2);
+        return new Promise(resolve => {
+          strip.offsetHeight;
+          strip.style.transition = `transform ${spinDuration}s cubic-bezier(0.25, 1, 0.5, 1)`;
+          strip.style.transform = `translateY(-${totalSpinDistance}px)`;
+          strip.addEventListener('transitionend', () => {
+            strip.style.transition = 'none';
+            const resetIndex = (targetIndex % slotSymbols.length) + slotSymbols.length;
+            const resetPosition = resetIndex * symbolHeight - symbolHeight;
+            strip.style.transform = `translateY(-${resetPosition}px)`;
+            resolve();
+          }, { once: true });
+        });
+      });
+      await Promise.all(promises);
+      if (results[0] === results[1] && results[1] === results[2]) {
+        slotResultText.textContent = `🎉 Jackpot 🎉`;
+      } else if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) {
+        slotResultText.textContent = `Zweifach-Kombi!`;
+      } else {
+        slotResultText.textContent = `Probier's nochmal!`;
+      }
+      isSlotSpinning = false;
+      spinSlotBtn.disabled = false;
+    });
+    const lottoPicker = document.getElementById("lotto-picker");
+    const superzahlPicker = document.getElementById("superzahl-picker");
+    const generateLottoBtn = document.getElementById("generateLottoBtn");
+    const checkLottoBtn = document.getElementById("checkLottoBtn");
+    const newLottoGameBtn = document.getElementById("newLottoGameBtn");
+    const lottoResultDiv = document.getElementById("lotto-result");
+    function createLottoBoard() {
+      lottoPicker.innerHTML = '';
+      superzahlPicker.innerHTML = '';
+      for (let i = 1; i <= 49; i++) {
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox"; checkbox.id = `lotto-num-${i}`; checkbox.name = "lotto-num"; checkbox.value = i;
+        checkbox.addEventListener("change", e => { if (document.querySelectorAll('input[name="lotto-num"]:checked').length > 6) { e.target.checked = false; alert("Du kannst nur 6 Zahlen auswählen."); } });
+        const label = document.createElement("label");
+        label.htmlFor = checkbox.id; label.textContent = i < 10 ? "0" + i : i;
+        lottoPicker.append(checkbox, label);
+      }
+      for (let i = 0; i <= 9; i++) {
+        const radio = document.createElement("input");
+        radio.type = "radio"; radio.id = `superzahl-${i}`; radio.name = "superzahl"; radio.value = i;
+        const label = document.createElement("label");
+        label.htmlFor = radio.id; label.textContent = i;
+        superzahlPicker.append(radio, label);
+      }
+    }
+    function resetLottoField() {
+      document.querySelectorAll("#lotto-picker label, #superzahl-picker label").forEach(l => l.classList.remove("correct", "incorrect", "missing"));
+      document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(i => { i.checked = false; i.disabled = false; });
+      lottoResultDiv.innerHTML = "";
+      generateLottoBtn.style.display = "block"; checkLottoBtn.style.display = "block"; newLottoGameBtn.style.display = "none";
+    }
+    generateLottoBtn.addEventListener("click", () => {
+      resetLottoField();
+      const numbers = new Set();
+      while (numbers.size < 6) numbers.add(Math.floor(Math.random() * 49) + 1);
+      numbers.forEach(num => { document.getElementById(`lotto-num-${num}`).checked = true; });
+      document.getElementById(`superzahl-${Math.floor(Math.random() * 10)}`).checked = true;
+    });
+    newLottoGameBtn.addEventListener("click", resetLottoField);
+    checkLottoBtn.addEventListener("click", () => {
+      const selectedNums = Array.from(document.querySelectorAll('input[name="lotto-num"]:checked')).map(i => +i.value);
+      const superzahlRadio = document.querySelector('input[name="superzahl"]:checked');
+      if (selectedNums.length !== 6 || !superzahlRadio) { alert("Bitte wähle 6 Zahlen und eine Superzahl aus."); return; }
+      const selectedSuperzahl = +superzahlRadio.value;
+      const winningNumbers = new Set();
+      while (winningNumbers.size < 6) winningNumbers.add(Math.floor(Math.random() * 49) + 1);
+      const winningSuperzahl = Math.floor(Math.random() * 10);
+      let correctCount = 0;
+      for (let i = 1; i <= 49; i++) {
+        const label = lottoPicker.querySelector(`label[for="lotto-num-${i}"]`);
+        const isSelected = selectedNums.includes(i);
+        const isWinning = winningNumbers.has(i);
+        if (isSelected && isWinning) { label.classList.add("correct"); correctCount++; }
+        else if (isSelected) { label.classList.add("incorrect"); }
+        else if (isWinning) { label.classList.add("missing"); }
+      }
+      document.querySelectorAll('#superzahl-picker label').forEach(label => {
+        const val = +label.htmlFor.replace('superzahl-', '');
+        if (val === selectedSuperzahl && val === winningSuperzahl) label.classList.add("correct");
+        else if (val === selectedSuperzahl) label.classList.add("incorrect");
+        else if (val === winningSuperzahl) label.classList.add("missing");
+      });
+      const superzahlCorrect = selectedSuperzahl === winningSuperzahl;
+      lottoResultDiv.innerHTML = `Gezogen: ${[...winningNumbers].sort((a, b) => a - b).join(', ')} | Superzahl: ${winningSuperzahl}<br>Du hattest ${correctCount} Richtige${superzahlCorrect ? " und die Superzahl!" : "."}`;
+      generateLottoBtn.style.display = "none"; checkLottoBtn.style.display = "none"; newLottoGameBtn.style.display = "block"; newLottoGameBtn.style.display;
+      document.querySelectorAll('#lotto-picker input, #superzahl-picker input').forEach(i => i.disabled = true);
+    });
+    const bjSuits = ['♠', '♥', '♦', '♣'];
+    const bjValues = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+    let bjDeck = [];
+    let dealerHand = [];
+    let playerHand = [];
+    let isGameOver = false;
+    const dealerHandEl = document.getElementById('dealer-hand');
+    const playerHandEl = document.getElementById('player-hand');
+    const dealerScoreEl = document.getElementById('dealer-score');
+    const playerScoreEl = document.getElementById('player-score');
+    const bjResultEl = document.getElementById('result');
+    const hitBtn = document.getElementById('hit-btn');
+    const standBtn = document.getElementById('stand-btn');
+    const restartBtn = document.getElementById('restart-btn');
+    function createDeck() {
+      bjDeck = [];
+      for (let suit of bjSuits) {
+        for (let value of bjValues) {
+          bjDeck.push({ suit, value });
+        }
+      }
+    }
+    function shuffleDeck() {
+      for (let i = bjDeck.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [bjDeck[i], bjDeck[j]] = [bjDeck[j], bjDeck[i]];
+      }
+    }
+    function cardValue(card) {
+      if (card.value === 'A') return 11;
+      if (['K', 'Q', 'J'].includes(card.value)) return 10;
+      return parseInt(card.value);
+    }
+    function calculateScore(hand) {
+      let score = 0;
+      let aceCount = 0;
+      for (let card of hand) {
+        score += cardValue(card);
+        if (card.value === 'A') aceCount++;
+      }
+      while (score > 21 && aceCount > 0) {
+        score -= 10;
+        aceCount--;
+      }
+      return score;
+    }
+    function renderHand(handEl, hand, hideSecondCard = false) {
+      handEl.innerHTML = '';
+      hand.forEach((card, idx) => {
+        const cardEl = document.createElement('div');
+        cardEl.className = 'card';
+        if (card.suit === '♥' || card.suit === '♦') cardEl.classList.add('red');
+        if (hideSecondCard && idx === 1) {
+          cardEl.classList.add('covered');
+          cardEl.innerHTML = '';
+        } else {
+          cardEl.innerHTML = `
+          <div class="corner top-left">${card.value}${card.suit}</div>
+          <div class="corner bottom-right">${card.value}${card.suit}</div>
+          <div class="symbol-center">${card.suit}</div>
+        `;
+        }
+        handEl.appendChild(cardEl);
+      });
+    }
+    function startGame() {
+      isGameOver = false;
+      bjResultEl.textContent = '';
+      restartBtn.style.display = 'none';
+      hitBtn.disabled = false;
+      standBtn.disabled = false;
+      createDeck();
+      shuffleDeck();
+      dealerHand = [bjDeck.pop(), bjDeck.pop()];
+      playerHand = [bjDeck.pop(), bjDeck.pop()];
+      renderHand(dealerHandEl, dealerHand, true);
+      renderHand(playerHandEl, playerHand);
+      if (!checkForEnd()) {
+        updateScores(true);
+      }
+    }
+    function updateScores(hideDealerSecondCard = false) {
+      let dealerScore = 0;
+      if (hideDealerSecondCard) {
+        dealerScore = cardValue(dealerHand[0]);
+      } else {
+        dealerScore = calculateScore(dealerHand);
+      }
+      let playerScore = calculateScore(playerHand);
+      dealerScoreEl.textContent = 'Punkte: ' + dealerScore;
+      playerScoreEl.textContent = 'Punkte: ' + playerScore;
+      return { dealerScore, playerScore };
+    }
+    function checkForEnd() {
+      let { playerScore } = updateScores();
+      if (playerScore > 21) {
+        endGame('Du hast überkauft! Dealer gewinnt.');
+        return true;
+      }
+      if (playerScore === 21 && playerHand.length === 2) {
+        dealerTurn();
+        return true;
+      }
+      return false;
+    }
+    function dealerTurn() {
+      hitBtn.disabled = true;
+      standBtn.disabled = true;
+      renderHand(dealerHandEl, dealerHand, false);
+      updateScores(false);
+      const playerScore = calculateScore(playerHand);
+      const dealerScore = calculateScore(dealerHand);
+      if (playerScore === 21 && playerHand.length === 2 && dealerScore !== 21) {
+        endGame('Blackjack! Du gewinnst!');
+        return;
+      }
+      if (playerScore === dealerScore && playerScore === 21) {
+        endGame('Unentschieden! (Push)');
+        return;
+      }
+      function dealerDraw() {
+        let currentDealerScore = calculateScore(dealerHand);
+        if (currentDealerScore < 17) {
+          dealerHand.push(bjDeck.pop());
+          renderHand(dealerHandEl, dealerHand);
+          updateScores(false);
+          setTimeout(dealerDraw, 1000);
+        } else {
+          finalizeGame();
+        }
+      }
+      setTimeout(dealerDraw, 1000);
+    }
+    function finalizeGame() {
+      const dealerScore = calculateScore(dealerHand);
+      const playerScore = calculateScore(playerHand);
+      if (dealerScore > 21 || playerScore > dealerScore) {
+        endGame('Du gewinnst!');
+      } else if (playerScore < dealerScore) {
+        endGame('Dealer gewinnt!');
+      } else {
+        endGame('Unentschieden! (Push)');
+      }
+    }
+    function endGame(message) {
+      isGameOver = true;
+      bjResultEl.textContent = message;
+      hitBtn.disabled = true;
+      standBtn.disabled = true;
+      restartBtn.style.display = 'block';
+      renderHand(dealerHandEl, dealerHand, false);
+      updateScores(false);
+    }
+    hitBtn.addEventListener('click', () => {
+      if (isGameOver) return;
+      playerHand.push(bjDeck.pop());
+      renderHand(playerHandEl, playerHand);
+      if (!checkForEnd()) {
+        updateScores(true);
+      }
+    });
+    standBtn.addEventListener('click', () => {
+      if (isGameOver) return;
+      dealerTurn();
+    });
+    restartBtn.addEventListener('click', () => {
+      startGame();
+    });
+
+    // --- FLAG GAME SCRIPT ---
+    const flagGameSection = document.getElementById('flag');
+    let flagScore = 0;
+    let flagWronged = 0;
+    let flagTotalRounds = 0;
+    let flagCorrectButtonID = 0;
+    let flagAllCountries = [];
+    let flagGameCountries = [];
+
+    function setupFlagGame() {
+      flagGameSection.querySelector("#easy").addEventListener("click", () => flag_startGame('easy'));
+      flagGameSection.querySelector("#medium").addEventListener("click", () => flag_startGame('medium'));
+      flagGameSection.querySelector("#hard").addEventListener("click", () => flag_startGame('hard'));
+      flagGameSection.querySelector("#restart-button").addEventListener("click", resetFlagGame);
+      const flagButtons = flagGameSection.getElementsByClassName("flag-button");
+      for (let i = 0; i < flagButtons.length; i++) {
+        flagButtons[i].addEventListener("click", flag_selectedFlag);
+      }
+    }
+    async function flag_loadCountries() {
+      if (flagAllCountries.length > 0) return;
+      try {
+        const response = await fetch('https://restcountries.com/v3.1/all?fields=name,cca2,flags,translations');
+        if (!response.ok) throw new Error(`HTTP-Fehler! Status: ${response.status}`);
+        const data = await response.json();
+        flagAllCountries = data.filter(country => country.cca2 && country.translations.deu && country.translations.deu.common);
+        console.log(`${flagAllCountries.length} Länder für Flaggenspiel geladen.`);
+      } catch (error) {
+        console.error("Flaggen-Länderdaten konnten nicht geladen werden:", error);
+        flagGameSection.querySelector(".start-container h1").innerText = "Fehler beim Laden!";
+        flagGameSection.querySelector(".start-container p").innerText = "Bitte Internetverbindung prüfen.";
+      }
+    }
+    function flag_startGame(difficulty) {
+      if (flagAllCountries.length === 0) {
+        const p = flagGameSection.querySelector(".start-container p");
+        p.innerHTML = "Länderdaten werden noch geladen...";
+        setTimeout(() => { p.innerHTML = "Wähle eine Schwierigkeit, um eine Runde<br>mit fester Flaggenanzahl zu starten."; }, 2000);
+        return;
+      }
+
+      flag_setupGameParameters(difficulty);
+      flag_getRandomCountries();
+
+      flagGameSection.querySelector(".start-container").classList.remove('active');
+      flagGameSection.querySelector(".result-container").classList.remove('active');
+      flagGameSection.querySelector(".game-container").classList.add('active');
+
+      flagGameSection.querySelectorAll('.flag-button').forEach(btn => btn.disabled = false);
+
+      flag_updateScoreLabel();
+      flag_drawFlag();
+    }
+    function flag_setupGameParameters(difficulty) {
+      if (difficulty === "easy") { flagTotalRounds = 10; }
+      else if (difficulty === "medium") { flagTotalRounds = 15; }
+      else { flagTotalRounds = 20; }
+      flagScore = 0;
+      flagWronged = 0;
+    }
+    function flag_updateScoreLabel() {
+      const scoreLabel = flagGameSection.querySelector("#score-label");
+      const currentRound = flagScore + flagWronged + 1;
+      scoreLabel.innerHTML = `Punkte: ${flagScore} | Runde: ${Math.min(currentRound, flagTotalRounds)}/${flagTotalRounds}`;
+    }
+    function flag_getRandomCountries() {
+      flagGameCountries = shuffle([...flagAllCountries]).slice(0, flagTotalRounds);
+    }
+    function flag_drawFlag() {
+      const index = flagScore + flagWronged;
+
+      flag_updateScoreLabel();
+
+      const correctCountry = flagGameCountries[index];
+      const options = [correctCountry];
+      while (options.length < 4) {
+        const randomIndex = Math.floor(Math.random() * flagAllCountries.length);
+        const randomCountry = flagAllCountries[randomIndex];
+        if (!options.some(opt => opt.cca2 === randomCountry.cca2)) {
+          options.push(randomCountry);
+        }
+      }
+
+      shuffle(options);
+      flagGameSection.querySelector("#flag-image").src = correctCountry.flags.png;
+      const flagButtons = flagGameSection.getElementsByClassName("flag-button");
+      for (let i = 0; i < flagButtons.length; i++) {
+        flagButtons[i].innerHTML = options[i].translations.deu.common;
+        flagButtons[i].style.backgroundColor = '';
+        if (options[i].cca2 === correctCountry.cca2) {
+          flagCorrectButtonID = i + 1;
+        }
+      }
+    }
+    function flag_selectedFlag(e) {
+      // Alle Buttons deaktivieren, damit kein Doppelklick
+      const flagButtons = flagGameSection.querySelectorAll('.flag-button');
+      flagButtons.forEach(btn => btn.disabled = true);
+
+      const selectedButtonID = parseInt(e.target.id);
+      const correctButton = flagGameSection.querySelector(`#\\${CSS.escape(flagCorrectButtonID.toString())}`);
+
+      console.log("Gewählt: ", selectedButtonID, " Korrekt: ", flagCorrectButtonID);
+
+      if (selectedButtonID === flagCorrectButtonID) {
+        e.target.style.backgroundColor = 'var(--accent-green)';
+        flagScore++;
+      } else {
+        e.target.style.backgroundColor = 'var(--accent-red)';
+        if (correctButton) correctButton.style.backgroundColor = 'var(--accent-green)';
+        flagWronged++;
+      }
+
+      const isGameOver = (flagScore + flagWronged) === flagTotalRounds;
+
+      setTimeout(() => {
+        if (isGameOver) {
+          flag_gameOver();
+        } else {
+          flag_drawFlag();
+          flagButtons.forEach(btn => {
+            btn.disabled = false;
+            btn.style.backgroundColor = '';
+          });
+        }
+      }, 1200);
+    }
+    function flag_gameOver() {
+      flagGameSection.querySelector(".game-container").classList.remove('active');
+      flagGameSection.querySelector(".result-container").classList.add('active');
+      const resultsArea = flagGameSection.querySelector("#resultsArea");
+      resultsArea.innerHTML = `Ergebnis: ${flagScore} von ${flagTotalRounds} richtig!`;
+    }
+    function resetFlagGame() {
+      flagScore = 0;
+      flagWronged = 0;
+      flagTotalRounds = 0;
+      flagGameSection.querySelector(".start-container").classList.add('active');
+      flagGameSection.querySelector(".game-container").classList.remove('active');
+      flagGameSection.querySelector(".result-container").classList.remove('active');
+    }
+  </script>
+</body>
+
+</html>
