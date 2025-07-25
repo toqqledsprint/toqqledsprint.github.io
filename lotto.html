@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lotto</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+    <link rel="icon" type="image/vnd.microsoft.icon" href="../img/favicon.ico">
+</head>
+<body>
+    <div class="starfield" id="starfield"></div>
+    <div class="page-layout">
+        <aside class="sidebar">
+            <h1><a href="games.html">Spiele</a></h1>
+            <nav class="game-nav" aria-label="Spieleauswahl">
+                <ul>
+                    <li><a href="wheel.html" class="game-nav-btn">🎡 Glücksrad</a></li>
+                    <li><a href="randomgenerator.html" class="game-nav-btn">🎲 Zufallszahl</a></li>
+                    <li><a href="headsortails.html" class="game-nav-btn">🪙 Kopf oder Zahl</a></li>
+                    <li><a href="slotmachine.html" class="game-nav-btn">🎰 Slotmaschine</a></li>
+                    <li><a href="lotto.html" class="game-nav-btn">🎯 Lotto</a></li>
+                    <li><a href="blackjack.html" class="game-nav-btn">🃏 Blackjack</a></li>
+                    <li><a href="guesstheflag.html" class="game-nav-btn">🌍 Errate die Flagge</a></li>
+                    <li><a href="guessthenumber.html" class="game-nav-btn">🔢 Errate die Zahl</a></li>
+                    <li><a href="yahtzee.html" class="game-nav-btn">🎲 Kniffel</a></li>                
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content" role="main">
+            <div class="game-container">
+                <section id="lotto" class="game">
+                    <div id="lotto-picker" role="group"></div>
+                    <p style="text-align:center; color:var(--accent-green); font-weight:bold; user-select:none;">Superzahl</p>
+                    <div id="superzahl-picker" role="radiogroup"></div>
+                    <button id="generateLottoBtn">Zufallszahlen</button>
+                    <button id="checkLottoBtn" style="background: linear-gradient(135deg, var(--accent-secondary),var(--accent-tertiary));">Ergebnis prüfen</button>
+                    <button id="newLottoGameBtn" class="btn-restart-style" style="display: none;">Neues Spiel</button>
+                    <div id="lotto-result"></div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- Universal Page Script ---
+        const starfield = document.getElementById('starfield');
+        const starCount = 120;
+        for (let i = 0; i < starCount; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            const size = Math.random() * 3 + 1 + 'px';
+            star.style.width = size;
+            star.style.height = size;
+            star.style.top = Math.random() * 100 + '%';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.animationDelay = (Math.random() * 4) + 's';
+            starfield.appendChild(star);
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPage = window.location.pathname.split('/').pop();
+            document.querySelector(`.game-nav-btn[href="${currentPage}"]`)?.classList.add('active');
+            
+            // --- Lotto Initialisierung ---
+            createLottoBoard();
+            resetLottoField();
+        });
+
+        // --- Lotto Script ---
+        const lottoPicker = document.getElementById("lotto-picker");
+        const superzahlPicker = document.getElementById("superzahl-picker");
+        const generateLottoBtn = document.getElementById("generateLottoBtn");
+        const checkLottoBtn = document.getElementById("checkLottoBtn");
+        const newLottoGameBtn = document.getElementById("newLottoGameBtn");
+        const lottoResultDiv = document.getElementById("lotto-result");
+
+        function createLottoBoard() {
+            lottoPicker.innerHTML = '';
+            superzahlPicker.innerHTML = '';
+            for (let i = 1; i <= 49; i++) {
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox"; checkbox.id = `lotto-num-${i}`; checkbox.name = "lotto-num"; checkbox.value = i;
+                checkbox.addEventListener("change", e => { if (document.querySelectorAll('input[name="lotto-num"]:checked').length > 6) { e.target.checked = false; alert("Du kannst nur 6 Zahlen auswählen."); } });
+                const label = document.createElement("label");
+                label.htmlFor = checkbox.id; label.textContent = i < 10 ? "0" + i : i;
+                lottoPicker.append(checkbox, label);
+            }
+            for (let i = 0; i <= 9; i++) {
+                const radio = document.createElement("input");
+                radio.type = "radio"; radio.id = `superzahl-${i}`; radio.name = "superzahl"; radio.value = i;
+                const label = document.createElement("label");
+                label.htmlFor = radio.id; label.textContent = i;
+                superzahlPicker.append(radio, label);
+            }
+        }
+
+        function resetLottoField() {
+            document.querySelectorAll("#lotto-picker label, #superzahl-picker label").forEach(l => l.classList.remove("correct", "incorrect", "missing"));
+            document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(i => { i.checked = false; i.disabled = false; });
+            lottoResultDiv.innerHTML = "";
+            generateLottoBtn.style.display = "block"; checkLottoBtn.style.display = "block"; newLottoGameBtn.style.display = "none";
+        }
+
+        generateLottoBtn.addEventListener("click", () => {
+            resetLottoField();
+            const numbers = new Set();
+            while (numbers.size < 6) numbers.add(Math.floor(Math.random() * 49) + 1);
+            numbers.forEach(num => { document.getElementById(`lotto-num-${num}`).checked = true; });
+            document.getElementById(`superzahl-${Math.floor(Math.random() * 10)}`).checked = true;
+        });
+
+        newLottoGameBtn.addEventListener("click", resetLottoField);
+
+        checkLottoBtn.addEventListener("click", () => {
+            const selectedNums = Array.from(document.querySelectorAll('input[name="lotto-num"]:checked')).map(i => +i.value);
+            const superzahlRadio = document.querySelector('input[name="superzahl"]:checked');
+            if (selectedNums.length !== 6 || !superzahlRadio) { alert("Bitte wähle 6 Zahlen und eine Superzahl aus."); return; }
+            const selectedSuperzahl = +superzahlRadio.value;
+            const winningNumbers = new Set();
+            while (winningNumbers.size < 6) winningNumbers.add(Math.floor(Math.random() * 49) + 1);
+            const winningSuperzahl = Math.floor(Math.random() * 10);
+            let correctCount = 0;
+            for (let i = 1; i <= 49; i++) {
+                const label = lottoPicker.querySelector(`label[for="lotto-num-${i}"]`);
+                const isSelected = selectedNums.includes(i);
+                const isWinning = winningNumbers.has(i);
+                if (isSelected && isWinning) { label.classList.add("correct"); correctCount++; }
+                else if (isSelected) { label.classList.add("incorrect"); }
+                else if (isWinning) { label.classList.add("missing"); }
+            }
+            document.querySelectorAll('#superzahl-picker label').forEach(label => {
+                const val = +label.htmlFor.replace('superzahl-', '');
+                if (val === selectedSuperzahl && val === winningSuperzahl) label.classList.add("correct");
+                else if (val === selectedSuperzahl) label.classList.add("incorrect");
+                else if (val === winningSuperzahl) label.classList.add("missing");
+            });
+            const superzahlCorrect = selectedSuperzahl === winningSuperzahl;
+            lottoResultDiv.innerHTML = `Gezogen: ${[...winningNumbers].sort((a, b) => a - b).join(', ')} | Superzahl: ${winningSuperzahl}<br>Du hattest ${correctCount} Richtige${superzahlCorrect ? " und die Superzahl!" : "."}`;
+            generateLottoBtn.style.display = "none"; checkLottoBtn.style.display = "none"; newLottoGameBtn.style.display = "block";
+            document.querySelectorAll('#lotto-picker input, #superzahl-picker input').forEach(i => i.disabled = true);
+        });
+    </script>
+</body>
+</html>
