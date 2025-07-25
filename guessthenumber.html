@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Errate die Zahl</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+  <link rel="icon" type="image/vnd.microsoft.icon" href="../img/favicon.ico">
+</head>
+
+<body>
+  <div class="starfield" id="starfield"></div>
+  <div class="page-layout">
+    <aside class="sidebar">
+      <h1><a href="games.html">Spiele</a></h1>
+      <nav class="game-nav" aria-label="Spieleauswahl">
+        <ul>
+          <li><a href="wheel.html" class="game-nav-btn">🎡 Glücksrad</a></li>
+          <li><a href="randomgenerator.html" class="game-nav-btn">🎲 Zufallszahl</a></li>
+          <li><a href="headsortails.html" class="game-nav-btn">🪙 Kopf oder Zahl</a></li>
+          <li><a href="slotmachine.html" class="game-nav-btn">🎰 Slotmaschine</a></li>
+          <li><a href="lotto.html" class="game-nav-btn">🎯 Lotto</a></li>
+          <li><a href="blackjack.html" class="game-nav-btn">🃏 Blackjack</a></li>
+          <li><a href="guesstheflag.html" class="game-nav-btn">🌍 Errate die Flagge</a></li>
+          <li><a href="guessthenumber.html" class="game-nav-btn">🔢 Errate die Zahl</a></li>
+          <li><a href="yahtzee.html" class="game-nav-btn">🎲 Kniffel</a></li>                
+        </ul>
+      </nav>
+    </aside>
+    <main class="main-content" role="main">
+      <div class="game-container">
+        <section id="guess-the-number" class="game">
+          <h2>Errate die Zahl</h2>
+          <p>Errate die Zahl zwischen 1 und 100</p>
+
+          <!-- The input and guess button are grouped together -->
+          <div class="input-group">
+            <input type="number" id="guessInput" min="1" max="100" placeholder="Dein Tipp" />
+            <button id="guessBtn">Raten</button>
+          </div>
+          
+          <button id="restart-btn" class="btn-restart-style" style="display:none;">Neues Spiel</button>
+
+          <div id="feedback">Gib deinen ersten Tipp ein!</div>
+          <div id="attempts"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // --- Universal Page Script ---
+    const starfield = document.getElementById('starfield');
+    const starCount = 120;
+    for (let i = 0; i < starCount; i++) {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      const size = Math.random() * 3 + 1 + 'px';
+      star.style.width = size;
+      star.style.height = size;
+      star.style.top = Math.random() * 100 + '%';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.animationDelay = (Math.random() * 4) + 's';
+      starfield.appendChild(star);
+    }
+
+    // --- Guess the Number Script ---
+    const guessInput = document.getElementById('guessInput');
+    const guessBtn = document.getElementById('guessBtn');
+    const restartBtn = document.getElementById('restart-btn');
+    const feedback = document.getElementById('feedback');
+    const attemptsEl = document.getElementById('attempts');
+    const inputGroup = document.querySelector('.input-group');
+
+    let secretNumber;
+    let attempts;
+    const maxAttempts = 10;
+    
+    // This combined listener handles page setup and game initialization
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentPage = window.location.pathname.split('/').pop();
+      const activeLink = document.querySelector(`.game-nav-btn[href="${currentPage}"]`);
+      if (activeLink) {
+        activeLink.classList.add('active');
+      }
+      resetGame(); // Start the first game
+    });
+
+    function resetGame() {
+      secretNumber = Math.floor(Math.random() * 100) + 1;
+      attempts = 0;
+      
+      feedback.textContent = 'Gib einen Tipp ein.';
+      feedback.className = '';
+      attemptsEl.textContent = '';
+      guessInput.value = '';
+      
+      // Show the guessing controls and hide the restart button
+      inputGroup.style.display = 'flex';
+      restartBtn.style.display = 'none';
+
+      guessInput.focus();
+    }
+    
+    function endGame(isWin) {
+      // Hide the guessing controls and show the restart button
+      inputGroup.style.display = 'none';
+      restartBtn.style.display = 'block';
+      attemptsEl.textContent = '';
+
+      if (isWin) {
+        feedback.textContent = `🎉 Richtig! Die Zahl war ${secretNumber}. Du hast ${attempts} Versuch${attempts > 1 ? 'e' : ''} gebraucht.`;
+        feedback.className = 'success';
+      } else {
+        feedback.textContent = `😞 Verloren! Die gesuchte Zahl war ${secretNumber}.`;
+        feedback.className = 'error';
+      }
+    }
+
+    function checkGuess() {
+      const guess = Number(guessInput.value);
+      if (!guess || guess < 1 || guess > 100) {
+        feedback.textContent = 'Bitte gib eine gültige Zahl von 1 bis 100 ein.';
+        feedback.className = 'error';
+        return;
+      }
+
+      attempts++;
+      if (guess === secretNumber) {
+        endGame(true); // Player won
+      } else if (attempts >= maxAttempts) {
+        endGame(false); // Player lost
+      } else if (guess < secretNumber) {
+        feedback.textContent = 'Zu niedrig! Versuch es nochmal.';
+        feedback.className = 'hint';
+        attemptsEl.textContent = `Versuch ${attempts} von ${maxAttempts}`;
+      } else {
+        feedback.textContent = 'Zu hoch! Versuch es nochmal.';
+        feedback.className = 'hint';
+        attemptsEl.textContent = `Versuch ${attempts} von ${maxAttempts}`;
+      }
+
+      guessInput.value = '';
+      guessInput.focus();
+    }
+
+    // Event Listeners
+    guessBtn.addEventListener('click', checkGuess);
+    restartBtn.addEventListener('click', resetGame);
+
+    guessInput.addEventListener('keydown', (e) => {
+      // Only trigger checkGuess if the input group is visible
+      if (e.key === 'Enter' && inputGroup.style.display !== 'none') {
+        e.preventDefault();
+        checkGuess();
+      }
+    });
+
+  </script>
+
+</body>
+</html>
